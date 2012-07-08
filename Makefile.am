@@ -18,15 +18,27 @@ AM_CXXFLAGS=-I$(top_srcdir)/src/
 # libraries that are needed by this library
 libmathic_@MATHIC_API_VERSION@_la_LIBADD= $(DEPS_LIBS)
 
-# the sources that are built to make libmathic
-libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp	\
-  src/mathic/ColumnPrinter.cpp src/mathic/DivMask.cpp				\
-  src/mathic/Action.cpp src/mathic/BoolParameter.cpp				\
-  src/mathic/CliParameter.cpp src/mathic/CliParser.cpp				\
-  src/mathic/ElementDeleter.cpp src/mathic/NameFactory.cpp			\
-  src/mathic/error.cpp src/mathic/HelpAction.cpp					\
-  src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp	\
-  src/mathic/display.cpp
+# the sources that are built to make libmathic. Listing the headers in
+# sources ensure that those files are included in distributions.
+libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp		\
+  src/mathic/ColumnPrinter.cpp src/mathic/DivMask.cpp					\
+  src/mathic/Action.cpp src/mathic/BoolParameter.cpp					\
+  src/mathic/CliParameter.cpp src/mathic/CliParser.cpp					\
+  src/mathic/ElementDeleter.cpp src/mathic/NameFactory.cpp				\
+  src/mathic/error.cpp src/mathic/HelpAction.cpp						\
+  src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp		\
+  src/mathic/display.cpp src/mathic/Action.h src/mathic/Geobucket.h		\
+  src/mathic/BinaryKDTree.h src/mathic/GeoFront.h						\
+  src/mathic/BoolParameter.h src/mathic/Heap.h							\
+  src/mathic/CliParameter.h src/mathic/HelpAction.h						\
+  src/mathic/CliParser.h src/mathic/IntegerParameter.h					\
+  src/mathic/ColumnPrinter.h src/mathic/KDEntryArray.h					\
+  src/mathic/Comparer.h src/mathic/KDTree.h src/mathic/ComTree.h		\
+  src/mathic/NameFactory.h src/mathic/display.h							\
+  src/mathic/PackedKDTree.h src/mathic/DivFinder.h src/mathic/stdinc.h	\
+  src/mathic/DivList.h src/mathic/StlSet.h src/mathic/DivMask.h			\
+  src/mathic/StringParameter.h src/mathic/ElementDeleter.h				\
+  src/mathic/Timer.h src/mathic/error.h src/mathic/TourTree.h
 
 # The headers that libmathic installs.
 # Normally, automake strips the path from the files when installing them,
@@ -52,20 +64,28 @@ pkgconfig_DATA = build/autotools/mathic-$(MATHIC_API_VERSION).pc
 # When making a distribution file, Automake knows to include all files
 # that are necessary to build the project. EXTRA_DIST specifies files
 # to include beyond those used in the build process.
-EXTRA_DIST = autogen.sh
+EXTRA_DIST = autogen.sh libs/gtest
 
 # tell automake what programs are there that are not built automatically
 EXTRA_PROGRAMS = pqsim divsim
 
-# set up the divisor query simulation
+# set up the divisor query simulation. Listing the headers in sources
+# ensure that those files are included in distributions.
 divsim_CPPFLAGS = $(DEPS_CFLAGS)
-divsim_SOURCES = src/divsim/divMain.cpp src/divsim/Simulation.cpp
+divsim_SOURCES = src/divsim/divMain.cpp src/divsim/Simulation.cpp		\
+  src/divsim/DivListModel.h src/divsim/KDTreeModel.h					\
+  src/divsim/Simulation.h src/divsim/divMain.h src/divsim/Monomial.h	\
+  src/divsim/stdinc.h
 divsim_LDADD = $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 
-# set up the priority queue simulation
+# set up the priority queue simulation. Listing the headers in sources
+# ensure that those files are included in distributions.
 pqsim_CPPFLAGS = $(DEPS_CFLAGS)
-pqsim_SOURCES = src/pqsim/Item.cpp src/pqsim/Model.cpp	\
-  src/pqsim/pqMain.cpp src/pqsim/Simulator.cpp
+pqsim_SOURCES = src/pqsim/Item.cpp src/pqsim/Model.cpp				\
+  src/pqsim/pqMain.cpp src/pqsim/Simulator.cpp						\
+  src/pqsim/GeobucketModel.h src/pqsim/Model.h src/pqsim/stdinc.h	\
+  src/pqsim/HeapModel.h src/pqsim/pqMain.h src/pqsim/StlSetModel.h	\
+  src/pqsim/Item.h src/pqsim/Simulator.h src/pqsim/TourTreeModel.h
 pqsim_LDADD = $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 
 
