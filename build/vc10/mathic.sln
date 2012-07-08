@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "divsim", "divsim\divsim.vcxproj", "{CEF324F2-5D58-48DE-A67F-C7EB21E0737E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pqsim", "pqsim\pqsim.vcxproj", "{1B6A84DF-114E-46A3-B868-04F203156CF4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CEF324F2-5D58-48DE-A67F-C7EB21E0737E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CEF324F2-5D58-48DE-A67F-C7EB21E0737E}.Debug|Win32.Build.0 = Debug|Win32
+		{CEF324F2-5D58-48DE-A67F-C7EB21E0737E}.Release|Win32.ActiveCfg = Release|Win32
+		{CEF324F2-5D58-48DE-A67F-C7EB21E0737E}.Release|Win32.Build.0 = Release|Win32
+		{1B6A84DF-114E-46A3-B868-04F203156CF4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1B6A84DF-114E-46A3-B868-04F203156CF4}.Debug|Win32.Build.0 = Debug|Win32
+		{1B6A84DF-114E-46A3-B868-04F203156CF4}.Release|Win32.ActiveCfg = Release|Win32
+		{1B6A84DF-114E-46A3-B868-04F203156CF4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

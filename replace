@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "Running script \"sed s/$1/$2/\""
+for i in 1 2 3; do
+  /usr/bin/sleep 1; echo -n .;
+done
+
+for f in `ls src/*.cpp src/*.h`; do
+  echo "Processing $f";
+  sed "s/$1/$2/" < $f > $f.tmp
+  mv $f.tmp $f
+done
