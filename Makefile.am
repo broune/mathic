@@ -104,21 +104,3 @@ unittest_LDFLAGS= $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 test_LIBS=
 unittest_SOURCES=src/test/DivFinder.cpp src/test/gtestInclude.cpp	\
 src/test/testMain.cpp
-
-# allow to download gtest in case of needing to run unit tests
-GTEST_DIR = $(top_srcdir)/libs/
-GTEST_TMP_DIR = $(top_srcdir)/libs/
-GTEST_VERSION = 1.6.0
-GTEST_DOWNLOAD_FILE = gtest-$(GTEST_VERSION).zip
-gtest: $(GTEST_DIR)/gtest
-$(GTEST_DIR)/gtest:
-	mkdir -p $(GTEST_TMP_DIR);
-	rm -rf $(GTEST_TMP_DIR)/$(GTEST_DOWNLOAD_FILE);
-	rm -rf $(GTEST_TMP_DIR)/gtest-$(GTEST_VERSION);
-	rm -rf $(GTEST_TMP_DIR)/gtest;
-	(cd $(GTEST_TMP_DIR); \
-	  wget http://googletest.googlecode.com/files/$(GTEST_DOWNLOAD_FILE); \
-	  unzip $(GTEST_DOWNLOAD_FILE);)
-	rm -rf $(GTEST_DIR)/gtest;
-	mv $(GTEST_TMP_DIR)/gtest-$(GTEST_VERSION) $(GTEST_DIR)/gtest;
-.PHONY: gtest
