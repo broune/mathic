@@ -40,6 +40,11 @@ dnl   the directory structure of the source files. This way, two source
 dnl   files with the same name in different directories do not conflict.
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall])
 
+# if --enable-silent-rules is passed to ./configure or if V=0 is passed
+# to make, then the compilation output will be much less verbose making
+# it possible to spot warnings and errors as they go by.
+AM_SILENT_RULES()
+
 # Set up the $(LN_S) macro, which creates symbolic links
 AC_PROG_LN_S
 
