@@ -123,7 +123,7 @@ namespace mathic {
 	  Cannot be combined with useDoubleBucket.
   */
   template<class C>
-	class Geobucket {
+  class Geobucket {
   public:
 	typedef C Configuration;
 	typedef typename Configuration::Entry Entry;
@@ -141,10 +141,14 @@ namespace mathic {
 	// be present twice in [begin, end).
 	template<class It>
     void push(It begin, It end);
+	
+    Entry pop();
     void clear();
-	Entry pop();
 	Entry top() const;
+    void decreaseTop(Entry newEntry);
+
 	bool empty() const;
+    size_t size() const;
 	void print(std::ostream& out) const;
 
     template<class T>
@@ -451,24 +455,32 @@ namespace mathic {
   }
 
   template<class C>
-	typename Geobucket<C>::Entry Geobucket<C>::top() const {
+  typename Geobucket<C>::Entry Geobucket<C>::top() const {
 	MATHIC_ASSERT(!empty());
 	return _front.getMax(_bucketBegin, _bucketEnd)->back();
   }
 
   template<class C>
-	bool Geobucket<C>::empty() const {
+  void Geobucket<C>::decreaseTop(Entry newEntry) {
+    MATHIC_ASSERT(!empty());
+    pop();
+    push(newEntry);
+  }
+  
+  template<class C>
+  size_t Geobucket<C>::size() const {
 #ifdef MATHIC_DEBUG
-	bool empty = true;
-	for (size_t b = 0; b < _buckets.size(); ++b) {
-	  if (!_buckets[b].empty()) {
-		empty = false;
-		break;
-	  }
-	}
-	MATHIC_ASSERT(empty == !_entryCount);
+	size_t sum = 0;
+	for (size_t b = 0; b < _buckets.size(); ++b)
+      sum += _buckets[b].size();
+	MATHIC_ASSERT(sum == _entryCount);
 #endif
-	return _entryCount == 0;
+    return _entryCount;
+  }
+
+  template<class C>
+  bool Geobucket<C>::empty() const {
+    return size() == 0;
   }
 
   template<class C>
@@ -556,7 +568,7 @@ namespace mathic {
 	MATHIC_ASSERT(!from.empty());
 	MATHIC_ASSERT(&to != &from);
 	MATHIC_ASSERT(to.size() + from.size() <= to.capacity());
-	if (C::trackFront && _front.larger(&from, &to))
+	if (!C::trackFront || _front.larger(&from, &to))
 	  _front.swapKeys(&to, &from);
 	mergeToNonEmpty(to, from.begin(), from.end());
 	from.clear();
@@ -727,8 +739,8 @@ namespace mathic {
   }
 
   template<class C>
-	template<class It1, class It2, class ResIt>
-	ResIt Geobucket<C>::merge
+  template<class It1, class It2, class ResIt>
+  ResIt Geobucket<C>::merge
 	(It1 begin1, It1 end1, It2 begin2, It2 end2, ResIt res) {
 	if (begin1 == end1) goto range1Done;
 	if (begin2 == end2) goto range2Done;
@@ -759,7 +771,7 @@ namespace mathic {
   }
 
   template<class C>
-	Geobucket<C>::Bucket::Bucket
+  Geobucket<C>::Bucket::Bucket
 	(size_t capacity, Entry* buffer, Entry* otherBuffer):
   _frontPos(0),
 	_otherBuffer(otherBuffer),
@@ -779,7 +791,7 @@ namespace mathic {
 
 #ifdef MATHIC_DEBUG
   template<class C>
-	bool Geobucket<C>::isValid() const {
+  bool Geobucket<C>::isValid() const {
 	MATHIC_ASSERT(_conf.geoBase >= 2);
 	MATHIC_ASSERT(!_buckets.empty());
 	MATHIC_ASSERT(_bucketBegin == &_buckets.front());
@@ -800,6 +812,6 @@ namespace mathic {
 	return _front.debugIsValid(_bucketBegin, _bucketEnd);
   }
 #endif
-}
+};
 
 #endif
