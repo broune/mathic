@@ -18,8 +18,7 @@ AM_CXXFLAGS=-I$(top_srcdir)/src/
 # libraries that are needed by this library
 libmathic_@MATHIC_API_VERSION@_la_LIBADD= $(DEPS_LIBS)
 
-# the sources that are built to make libmathic. Listing the headers in
-# sources ensure that those files are included in distributions.
+# the sources that are built to make libmathic.
 libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp		\
   src/mathic/ColumnPrinter.cpp src/mathic/DivMask.cpp					\
   src/mathic/Action.cpp src/mathic/BoolParameter.cpp					\
@@ -27,7 +26,17 @@ libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp		\
   src/mathic/ElementDeleter.cpp src/mathic/NameFactory.cpp				\
   src/mathic/error.cpp src/mathic/HelpAction.cpp						\
   src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp		\
-  src/mathic/display.cpp src/mathic/Action.h src/mathic/Geobucket.h		\
+  src/mathic/display.cpp
+
+# The headers that libmathic installs.
+# Normally, automake strips the path from the files when installing them,
+# so src/mathic/x.h gets installed as just x.h.
+mathicA_include_HEADERS = src/mathic.h
+mathicA_includedir = $(includedir)/mathic-$(MATHIC_API_VERSION)
+# install remaining headers into subdirectory of the include dir
+mathicB_includedir = \
+  $(includedir)/mathic-$(MATHIC_API_VERSION)/mathic
+mathicB_include_HEADERS = src/mathic/Action.h src/mathic/Geobucket.h	\
   src/mathic/BinaryKDTree.h src/mathic/GeoFront.h						\
   src/mathic/BoolParameter.h src/mathic/Heap.h							\
   src/mathic/CliParameter.h src/mathic/HelpAction.h						\
@@ -39,24 +48,6 @@ libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp		\
   src/mathic/DivList.h src/mathic/StlSet.h src/mathic/DivMask.h			\
   src/mathic/StringParameter.h src/mathic/ElementDeleter.h				\
   src/mathic/Timer.h src/mathic/error.h src/mathic/TourTree.h
-
-# The headers that libmathic installs.
-# Normally, automake strips the path from the files when installing them,
-# so src/mathic/x.h gets installed as just x.h.
-mathicA_include_HEADERS = src/mathic.h
-mathicA_includedir = $(includedir)/mathic-$(MATHIC_API_VERSION)
-# install remaining headers into subdirectory of the include dir
-mathicB_includedir = \
-  $(includedir)/mathic-$(MATHIC_API_VERSION)/mathic
-mathicB_include_HEADERS = src/mathic/stdinc.h src/mathic/Timer.h	\
-  src/mathic/ColumnPrinter.h src/mathic/ElementDeleter.h			\
-  src/mathic/error.h src/mathic/DivList.h src/mathic/KDTree.h		\
-  src/mathic/TourTree.h src/mathic/StlSet.h src/mathic/Heap.h		\
-  src/mathic/Geobucket.h src/mathic/Action.h src/mathic/DivMask.h	\
-  src/mathic/BoolParameter.h src/mathic/CliParameter.h				\
-  src/mathic/CliParser.h src/mathic/HelpAction.h					\
-  src/mathic/IntegerParameter.h src/mathic/StringParameter.h		\
-  src/mathic/display.h src/mathic/NameFactory.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = build/autotools/mathic-$(MATHIC_API_VERSION).pc

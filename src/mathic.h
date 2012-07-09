@@ -1,27 +1,27 @@
 // Include this file to pull in all external MemTailor files
 
 // utilities
-#include "../../src/Timer.h"
-#include "../../src/ColumnPrinter.h"
-#include "../../src/ElementDeleter.h"
-#include "../../src/error.h"
+#include "mathic/Timer.h"
+#include "mathic/ColumnPrinter.h"
+#include "mathic/ElementDeleter.h"
+#include "mathic/error.h"
 
 // divisor query data structures
-#include "../../src/DivList.h"
-#include "../../src/KDTree.h"
+#include "mathic/DivList.h"
+#include "mathic/KDTree.h"
 
 // priority queue data structures
-#include "../../src/TourTree.h"
-#include "../../src/StlSet.h"
-#include "../../src/Heap.h"
-#include "../../src/Geobucket.h"
+#include "mathic/TourTree.h"
+#include "mathic/StlSet.h"
+#include "mathic/Heap.h"
+#include "mathic/Geobucket.h"
 
 // CLI package
-#include "../../src/Action.h"
-#include "../../src/BoolParameter.h"
-#include "../../src/CliParameter.h"
-#include "../../src/CliParser.h"
-#include "../../src/HelpAction.h"
-#include "../../src/IntegerParameter.h"
-#include "../../src/StringParameter.h"
-#include "../../src/display.h"
+#include "mathic/Action.h"
+#include "mathic/BoolParameter.h"
+#include "mathic/CliParameter.h"
+#include "mathic/CliParser.h"
+#include "mathic/HelpAction.h"
+#include "mathic/IntegerParameter.h"
+#include "mathic/StringParameter.h"
+#include "mathic/display.h"
