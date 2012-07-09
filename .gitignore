@@ -10,3 +10,20 @@
 *.lai
 *.la
 *.a
+
+# Emacs backup files
+\#*\#
+*~
+
+# Autotools generated files
+config.log
+config.status
+libtool
+.deps/
+.dirstamp
+aclocal.m4
+autom4te.cache/
+Makefile.in
+Makefile
+configure
+.libs/

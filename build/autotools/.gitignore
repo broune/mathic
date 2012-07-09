@@ -1,0 +1,9 @@
+# Autotools generated files
+ar-lib
+config.guess
+config.sub
+depcomp
+install-sh
+ltmain.sh
+mathic-*.pc
+missing
