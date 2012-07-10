@@ -19,14 +19,14 @@ AM_CXXFLAGS=-I$(top_srcdir)/src/
 libmathic_@MATHIC_API_VERSION@_la_LIBADD= $(DEPS_LIBS)
 
 # the sources that are built to make libmathic.
-libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp		\
-  src/mathic/ColumnPrinter.cpp src/mathic/DivMask.cpp					\
-  src/mathic/Action.cpp src/mathic/BoolParameter.cpp					\
-  src/mathic/CliParameter.cpp src/mathic/CliParser.cpp					\
-  src/mathic/ElementDeleter.cpp src/mathic/NameFactory.cpp				\
-  src/mathic/error.cpp src/mathic/HelpAction.cpp						\
-  src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp		\
-  src/mathic/display.cpp
+libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp	\
+  src/mathic/ColumnPrinter.cpp src/mathic/DivMask.cpp				\
+  src/mathic/Action.cpp src/mathic/BoolParameter.cpp				\
+  src/mathic/CliParameter.cpp src/mathic/CliParser.cpp				\
+  src/mathic/ElementDeleter.cpp src/mathic/NameFactory.cpp			\
+  src/mathic/error.cpp src/mathic/HelpAction.cpp					\
+  src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp	\
+  src/mathic/display.cpp src/mathic/BitTriangle.cpp
 
 # The headers that libmathic installs.
 # Normally, automake strips the path from the files when installing them,
@@ -47,7 +47,8 @@ mathicB_include_HEADERS = src/mathic/Action.h src/mathic/Geobucket.h	\
   src/mathic/PackedKDTree.h src/mathic/DivFinder.h src/mathic/stdinc.h	\
   src/mathic/DivList.h src/mathic/StlSet.h src/mathic/DivMask.h			\
   src/mathic/StringParameter.h src/mathic/ElementDeleter.h				\
-  src/mathic/Timer.h src/mathic/error.h src/mathic/TourTree.h
+  src/mathic/Timer.h src/mathic/error.h src/mathic/TourTree.h			\
+  src/mathic/BitTriangle.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = build/autotools/mathic-$(MATHIC_API_VERSION).pc
@@ -94,4 +95,4 @@ unittest_LDFLAGS= $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 
 test_LIBS=
 unittest_SOURCES=src/test/DivFinder.cpp src/test/gtestInclude.cpp	\
-src/test/testMain.cpp
+  src/test/testMain.cpp src/test/BitTriangle.cpp

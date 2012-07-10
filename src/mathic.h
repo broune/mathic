@@ -6,6 +6,9 @@
 #include "mathic/ElementDeleter.h"
 #include "mathic/error.h"
 
+// other data structures
+#include "mathic/BitTriangle.h"
+
 // divisor query data structures
 #include "mathic/DivList.h"
 #include "mathic/KDTree.h"
