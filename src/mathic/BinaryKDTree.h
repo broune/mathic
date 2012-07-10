@@ -1,5 +1,5 @@
-#ifndef MATHIC_BINARY_K_D_TRExtEntry_GUARD
-#define MATHIC_BINARY_K_D_TRExtEntry_GUARD
+#ifndef MATHIC_BINARY_K_D_TREE_GUARD
+#define MATHIC_BINARY_K_D_TREE_GUARD
 
 #include "stdinc.h"
 #include "DivMask.h"
