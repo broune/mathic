@@ -11,6 +11,9 @@
 *.la
 *.a
 
+# Executables (in Cygwin)
+*.exe
+
 # Emacs backup files
 \#*\#
 *~
