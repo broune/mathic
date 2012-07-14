@@ -7,8 +7,13 @@
 #include <vector>
 
 namespace mathic {
+  class TourTreeSuggestedOptions {
+  public:
+	// there are no tournament tree options so far.
+  };
+
   template<class C>
-	class TourTree {
+  class TourTree {
   public:
 	typedef C Configuration;
 	typedef typename Configuration::Entry Entry;
@@ -52,7 +57,10 @@ namespace mathic {
 
   private:
 	class Player;
-	typedef ComTree<Player*, C::fastIndex> Tree;
+	// Setting fastIndex to true speeds up left/right child
+	// computations. We only compute parents, so there is no reason
+	// to enable fastIndex.
+	typedef ComTree<Player*, false> Tree;
 	typedef typename Tree::Node Node;
 	struct Player { 
       Player(const Entry& entry, Node leaf): entry(entry), leaf(leaf) {}

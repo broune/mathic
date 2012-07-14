@@ -1,15 +1,14 @@
 #ifndef MATHIC_STDINC_GUARD
 #define MATHIC_STDINC_GUARD
 
-#if (defined DEBUG || defined _DEBUG) && (!(defined MATCHIC_NDEBUG))
-#ifndef MATHIC_DEBUG
-#define MATHIC_DEBUG
-#endif
-#include <cassert>
-#define MATHIC_ASSERT(X) assert(X)
+#if (defined MATHIC_DEBUG) && (defined MATHIC_NDEBUG)
+#error Both MATHIC_DEBUG and MATHIC_NDEBUG defined
 #endif
 
-#ifndef MATHIC_ASSERT
+#ifdef MATHIC_DEBUG
+#include <cassert>
+#define MATHIC_ASSERT(X) assert(X)
+#else
 #define MATHIC_ASSERT(X)
 #endif
 
