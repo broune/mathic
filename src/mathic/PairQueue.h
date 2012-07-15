@@ -54,17 +54,56 @@ namespace mathic {
   template<class Configuration>
   class PairQueue;
 
+  namespace PairQueueNamespace {
+	typedef unsigned int Index;
+
+	// Used by PairData<Configuration> to construct a PairData object
+	// to hold data for (col, row). PairData is not constructed in any
+	// other way than to call this function.
+	//
+	// The default implementation default-constructs the PairData and
+	// then calls Configuration::computePairData. Specialize (do not
+	// overload) this template function for your particular
+	// configuration type if you want something else to happen -- for
+	// example you might not want default construction to occur.
+	template<class Configuration>
+	void constructPairData
+	(void* memory, Index col, Index row, Configuration& conf) {
+	  MATHIC_ASSERT(memory != 0);
+	  MATHIC_ASSERT(col > row);
+	  typename Configuration::PairData* pd =
+		new (memory) typename Configuration::PairData();
+	  conf.computePairData(col, row, *pd);
+	}
+
+	// Used by PairData<Configuration> to destruct a PairData object
+	// currently holding data for (col, row). PairData is not
+	// destructed in any other way than to call this function.
+	//
+	// The default implementation just calls the
+	// destructor. Specialize (do not overload) this template function
+	// for your particular configuration type if you want something
+	// else to happen -- for example PairData might hold memory
+	// allocated from a memory pool that you want to return to the
+	// pool but you do not want to put a reference to the memory pool
+	// inside every PairData.
+	template<class Configuration>
+	void destructPairData
+	(typename Configuration::PairData* pd,
+	 Index col, Index row, Configuration& conf) {
+	  MATHIC_ASSERT(pd != 0);
+	  MATHIC_ASSERT(col > row);
+	  typedef typename Configuration::PairData PairData;
+	  pd->~PairData();
+	}
+  }
+
   template<class C>
   class PairQueue {
   public:
 	typedef C Configuration;
 	typedef typename C::PairData PairData;
-	typedef unsigned int Index;
-	struct ColumnEntry {
-	  ColumnEntry(const PairData& pd, Index r): pairData(pd), row(r) {}
-	  PairData pairData;
-	  Index row;
-	};
+	typedef PairQueueNamespace::Index Index;
 
 	// PairQueue stores a copy of the passed in configuration.
 	PairQueue(const Configuration& conf);
@@ -116,7 +155,7 @@ namespace mathic {
     class Column {
 	public:
 	  template<class Iter>
-	  Column
+	  static Column* create
 	  (Index col, Iter rowsBegin, Iter rowsEnd, C& conf, memt::Arena& arena);
 
 	  const PairData& pairData() {MATHIC_ASSERT(!empty()); return mPairData;}
@@ -127,9 +166,32 @@ namespace mathic {
 	  bool empty() const;
 	  size_t size() const; // number of pairs remaining in this column
 
+	  void destruct(C& conf) {
+		// if empty then we already destructed the data
+		if (!empty())
+		  destruct(rowIndex(), conf);
+	  }
+
 	private:
+	  // Do not call contructors on Column as that would construct the
+	  // PairData directly which is not allowed -- instead call the
+	  // factory function.
+	  Column(); // not available
+	  Column(const Column&); // not available
+	  void operator=(const Column&); // not available
+
+	  // Do not call the destructor as that would destruct the
+	  // PairData directly which is not allowed -- instead call
+	  // destruct(conf).
+	  ~Column(); // not available
+
+	  void destruct(Index row, C& conf) {
+		PairQueueNamespace::
+		  destructPairData(&mPairData, columnIndex(), row, conf);
+	  }
+
 	  PairData mPairData; // pairData of (columnIndex(), rowIndex())
-	  Index const mColumnIndex; // all pairs here have this column index
+	  Index mColumnIndex; // all pairs here have this column index
 	  
 	  bool big() const; // returns true if we need to use big part of union
 	  union { // the current row index is *begin
@@ -156,10 +218,13 @@ namespace mathic {
 
 	class ColumnDestructor {
 	public:
+	  ColumnDestructor(C& conf): mConf(conf) {}
 	  bool proceed(Column* const column) {
-		column->~Column();
+		column->destruct(mConf);
 		return true;
 	  }
+	private:
+	  C& mConf;
 	};
 
 	class QueueConfiguration : TourTreeSuggestedOptions {
@@ -184,78 +249,87 @@ namespace mathic {
 
 	ColumnQueue mColumnQueue;
 	size_t mColumnCount;
-	std::vector<Column*> mColumns;
 	memt::Arena mArena;
 	memt::Arena mScratchArena;
 	Configuration mConf;
-	std::vector<ColumnEntry> mColumnEntries;
   };
 
   //// Implementation
   template<class C>
   template<class Iter>
-  PairQueue<C>::Column::Column
+  typename PairQueue<C>::Column* PairQueue<C>::Column::create
   (Index const col,
    Iter const rowsBegin, Iter const rowsEnd,
    C& conf,
-   memt::Arena& arena):
-	mColumnIndex(col)
-  {
+   memt::Arena& arena) {
+	Column* column = arena.allocObjectNoCon<Column>();
+	column->mColumnIndex = col;
+
 #ifdef MATHIC_DEBUG
 	// check that the passed in range is weakly descending according
 	// to the custom order.
 	if (rowsBegin != rowsEnd) {
 	  Iter prevIt = rowsBegin;
 	  Iter it = rowsBegin;
-	  PairData prevPd;
-	  conf.computePairData(columnIndex(), *rowsBegin, prevPd);
-	  PairData currentPd;
 	  for (++it; it != rowsEnd; ++it, ++prevIt) {
-		conf.computePairData(columnIndex(), *it, currentPd);
+		memt::Arena::PtrNoConNoDecon<PairData> prevPd(arena);
+		memt::Arena::PtrNoConNoDecon<PairData> currentPd(arena);
+
+		PairQueueNamespace::constructPairData(prevPd.get(), col, *prevIt, conf);
+		try {
+		  PairQueueNamespace::constructPairData
+			(currentPd.get(), col, *it, conf);
+		} catch (...) {
+		  PairQueueNamespace::
+			destructPairData(prevPd.get(), col, *prevIt, conf);
+		  throw;
+		}
+
 		// check prev >= current, which is equivalent to !(prev < current)
 		MATHIC_ASSERT
-		  (!conf.cmpLessThan(conf.compare(columnIndex(), *prevIt, prevPd,
-										  columnIndex(), *it, currentPd)));
-		// !(currentPd < prevPd) 
-		prevPd = currentPd;
+		  (!conf.cmpLessThan(conf.compare(col, *prevIt, *prevPd,
+										  col, *it, *currentPd)));
+		PairQueueNamespace::
+		  destructPairData(currentPd.get(), col, *prevIt, conf);
+		PairQueueNamespace::destructPairData(prevPd.get(), col, *prevIt, conf);
 	  }
 	}
 #endif
 
 	size_t const entryCount = std::distance(rowsBegin, rowsEnd);
-	if (big()) {
+	if (column->big()) {
 	  std::pair<Index*, Index*> const range =
 		arena.allocArrayNoCon<Index>(entryCount);
-	  bigBegin = range.first;
-	  bigEnd = range.second;
+	  column->bigBegin = range.first;
+	  column->bigEnd = range.second;
 	  Index* rangeIt = range.first;
 	  Iter rowsIt = rowsBegin;
 	  for (; rangeIt != range.second; ++rangeIt, ++rowsIt) {
 		MATHIC_ASSERT(rowsIt != rowsEnd);
-		MATHIC_ASSERT(*rowsIt < mColumnIndex);
+		MATHIC_ASSERT(*rowsIt < col);
 		MATHIC_ASSERT(*rowsIt < std::numeric_limits<Index>::max());
 		*rangeIt = static_cast<Index>(*rowsIt);
 	  }
 	  MATHIC_ASSERT(rowsIt == rowsEnd);
-	  bigBegin = range.first;
-	  bigEnd = range.second;
 	} else {
 	  std::pair<SmallIndex*, SmallIndex*> range =
 		arena.allocArrayNoCon<SmallIndex>(entryCount);
-	  smallBegin = range.first;
-	  smallEnd = range.second;
+	  column->smallBegin = range.first;
+	  column->smallEnd = range.second;
 	  SmallIndex* rangeIt = range.first;
 	  Iter rowsIt = rowsBegin;
 	  for (; rangeIt != range.second; ++rangeIt, ++rowsIt) {
 		MATHIC_ASSERT(rowsIt != rowsEnd);
-		MATHIC_ASSERT(*rowsIt < mColumnIndex);
+		MATHIC_ASSERT(*rowsIt < col);
 		MATHIC_ASSERT(*rowsIt < std::numeric_limits<SmallIndex>::max());
 		*rangeIt = static_cast<SmallIndex>(*rowsIt);
 	  }
 	}
-	MATHIC_ASSERT(size() == entryCount);
-	MATHIC_ASSERT(empty() == (entryCount == 0));
-	conf.computePairData(columnIndex(), rowIndex(), mPairData);
+	MATHIC_ASSERT(column->size() == entryCount);
+	MATHIC_ASSERT(column->empty() == (entryCount == 0));
+	PairQueueNamespace::constructPairData
+	  (&column->mPairData, col, *rowsBegin, conf);
+	return column;
   }
 
   template<class C>
@@ -270,12 +344,23 @@ namespace mathic {
   template<class C>
   void PairQueue<C>::Column::incrementRowIndex(C& conf) {
 	MATHIC_ASSERT(!empty());
-	if (big())
+	if (big()) {
 	  ++bigBegin;
-	else
+	  if (bigBegin == bigEnd) {
+		MATHIC_ASSERT(empty());
+		destruct(*(bigBegin - 1), conf);
+		return;
+	  }
+	} else {
 	  ++smallBegin;
-	if (!empty())
-	  conf.computePairData(columnIndex(), rowIndex(), mPairData);
+	  if (smallBegin == smallEnd) {
+		MATHIC_ASSERT(empty());
+		destruct(*(smallBegin - 1), conf);
+		return;
+	  }
+	}
+	MATHIC_ASSERT(!empty());
+	conf.computePairData(columnIndex(), rowIndex(), mPairData);
   }
 
   template<class C>
@@ -296,7 +381,7 @@ namespace mathic {
 
   template<class C>
   bool PairQueue<C>::Column::big() const {
-	return columnIndex() >
+	return columnIndex() >=
 	  static_cast<size_t>(std::numeric_limits<SmallIndex>::max());
   }
 
@@ -309,7 +394,7 @@ namespace mathic {
 
   template<class C>
   PairQueue<C>::~PairQueue() {
-	ColumnDestructor destructor;
+	ColumnDestructor destructor(mConf);
 	mColumnQueue.forAll(destructor);
   }
 
@@ -336,19 +421,17 @@ namespace mathic {
 	++mColumnCount;
 	if (sortedRowsBegin == sortedRowsEnd)
 	  return;
-	mColumns.reserve(mColumns.size() + 1);
 	memt::Arena::Guard guard(mArena);
 
-	Column* column = new (mArena.allocObjectNoCon<Column>())
-	  Column(newColumnIndex, sortedRowsBegin, sortedRowsEnd, mConf, mArena);
+	Column* column = Column::create
+	  (newColumnIndex, sortedRowsBegin, sortedRowsEnd, mConf, mArena);
 
 	try {
 	  mColumnQueue.push(column);
 	} catch (...) {
-	  column->~Column();
+	  column->destruct(mConf);
 	  throw;
 	}
-	mColumns.push_back(column); // does not throw due to reserve above
 	guard.release();
   }
 
@@ -364,7 +447,7 @@ namespace mathic {
 	// actions: top(), change top element in-place, do decreaseTop/pop.
 	topColumn->incrementRowIndex(mConf);
 	if (topColumn->empty()) {
-	  topColumn->~Column();
+	  topColumn->destruct(mConf);
 	  mColumnQueue.pop();
 	} else
 	  mColumnQueue.decreaseTop(topColumn);

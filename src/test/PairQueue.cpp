@@ -210,7 +210,14 @@ namespace {
 	// better not have two of these objects around at the same time!
 	PQConDeconCounterConf() {mLive.clear();}
 
-	struct PairData {
+	class PairData {
+	  friend class PQConDeconCounterConf;
+	private:
+	  // only the configuration should call any method on PairData, in
+	  // this case even including the constructor and destructor
+	  // because we specialized
+	  // mathic::PairQueueNamespace::constructPairData and
+	  // mathic::PairQueueNamespace::destructPairData (see below).
 	  PairData() {makeLive();}
 	  ~PairData() {makeDead();}
 
@@ -239,6 +246,14 @@ namespace {
 	  size_t row;
 	};
 
+	void construct(void* memory) {
+	  new (memory) PairData();
+	}
+
+	void destruct(PairData* pd) {
+	  pd->~PairData();
+	}
+
 	void computePairData(size_t col, size_t row, PairData& pd) {
 	  MATHIC_ASSERT(pd.live());
 	  pd.row = row;
@@ -259,6 +274,26 @@ namespace {
 	static std::set<PairData const*> mLive;
   };
   std::set<PQConDeconCounterConf::PairData const*> PQConDeconCounterConf::mLive;
+}
+
+namespace mathic {
+  namespace PairQueueNamespace {
+	template<>
+	void constructPairData
+	(void* memory, Index col, Index row, PQConDeconCounterConf& conf) {
+	  PQConDeconCounterConf::PairData* pd =
+		static_cast<PQConDeconCounterConf::PairData*>(memory);
+	  conf.construct(pd);
+	  conf.computePairData(col, row, *pd);
+	}
+
+	template<>
+	void destructPairData
+	(PQConDeconCounterConf::PairData* pd,
+	 Index col, Index row, PQConDeconCounterConf& conf) {
+	  conf.destruct(pd);
+	}
+  }
 }
 
 // check that all PairQueue properly constructs and deconstructs
