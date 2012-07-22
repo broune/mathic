@@ -203,7 +203,7 @@ namespace mathic {
 
   template<class C, class B>
   void GeoFront<C, B, true>::reserveCapacity(size_t newCapacity) {
-    ASSERT(newCapacity >= size());
+    MATHIC_ASSERT(newCapacity >= size());
 	if (newCapacity == 0)
 	  newCapacity = 1;
     size_t const oldSize = size();

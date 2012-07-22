@@ -320,7 +320,7 @@ namespace mathic {
 	_front(_conf, _entryCount) {
 	MATHIC_ASSERT(_conf.geoBase > 1);
 	addBucket(); // this avoids the special case of no buckets.
-    ASSERT(_front.debugIsValid(_bucketBegin, _bucketEnd));
+    MATHIC_ASSERT(_front.debugIsValid(_bucketBegin, _bucketEnd));
   }
 
   template<class C>

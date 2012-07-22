@@ -390,7 +390,7 @@ stopped:;
           else
             child->updateToLowerBound(child->node->entries());
         }
-        ASSERT(node->debugIsValid());
+        MATHIC_ASSERT(node->debugIsValid());
       }
     }
     MATHIC_ASSERT(debugIsValid());
@@ -590,7 +590,7 @@ next:
     nodes.push_back(_root);
     for (size_t i = 0; i < nodes.size(); ++i) {
       Node* node = nodes[i];
-      ASSERT(node->entries().debugIsValid());
+      MATHIC_ASSERT(node->entries().debugIsValid());
       for (typename Node::iterator it = node->childBegin();
         it != node->childEnd(); ++it) {
         MATHIC_ASSERT(it->var < _conf.getVarCount());
@@ -738,8 +738,8 @@ next:
 #ifdef MATHIC_DEBUG
   template<class C>
   bool PackedKDTree<C>::Node::debugIsValid() const {
-    ASSERT(entries().debugIsValid());
-    ASSERT(childBegin() <= childEnd());
+    MATHIC_ASSERT(entries().debugIsValid());
+    MATHIC_ASSERT(childBegin() <= childEnd());
     if (C::UseTreeDivMask) {
       for (const_iterator child = childBegin(); child != childEnd(); ++child) {
         if (child != childEnd() - 1)

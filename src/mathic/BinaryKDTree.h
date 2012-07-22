@@ -317,7 +317,7 @@ namespace mathic {
     if (leaf->entries().size() == C::LeafSize) {
       Interior& interior = leaf->splitInsert(extEntry, parent, _arena, _conf);
       if (parent == 0) {
-        ASSERT(leaf == _root);
+        MATHIC_ASSERT(leaf == _root);
         _root = &interior;
       }
     } else {
@@ -370,7 +370,7 @@ namespace mathic {
       }
 
       if (parent == 0) {
-        ASSERT(_root == 0);
+        MATHIC_ASSERT(_root == 0);
         _root = node;
       } else if (isEqualOrLessChild)
         parent->setEqualOrLess(node);
@@ -394,7 +394,7 @@ namespace mathic {
         // continue with equal-or-less as next item      
       }
     }
-    ASSERT(_root != 0);
+    MATHIC_ASSERT(_root != 0);
 
     if (C::UseTreeDivMask) {
       // record nodes in tree using breadth first search
@@ -647,14 +647,14 @@ next:
     for (size_t i = 0; i < nodes.size(); ++i) {
       Node* nodei = nodes[i];
       if (nodei->isLeaf()) {
-        ASSERT(nodei->asLeaf().entries().debugIsValid());
+        MATHIC_ASSERT(nodei->asLeaf().entries().debugIsValid());
         continue;
       }
       Interior& interior = nodei->asInterior();
       size_t var = interior.getVar();
       Exponent exp = interior.getExponent();
 
-      ASSERT(_tmp.empty());
+      MATHIC_ASSERT(_tmp.empty());
       // check equal or less than sub tree
       _tmp.push_back(&interior.getEqualOrLess());
       while (!_tmp.empty()) {
@@ -770,7 +770,7 @@ next:
 
     interior.updateToLowerBound(extEntry);
     Leaf* insertLeaf = &interior.getChildFor(extEntry, conf).asLeaf();
-    ASSERT(insertLeaf->entries().size() < C::LeafSize);
+    MATHIC_ASSERT(insertLeaf->entries().size() < C::LeafSize);
     insertLeaf->entries().insert(extEntry, conf);
 
     return interior;
