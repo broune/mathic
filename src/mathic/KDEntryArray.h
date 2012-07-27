@@ -33,7 +33,7 @@ namespace mathic {
     void clear();
 
     void recalculateTreeDivMask();
-#ifdef DEBUG
+#ifdef MATHIC_DEBUG
     bool debugIsValid() const;
 #endif
 
@@ -475,7 +475,7 @@ namespace mathic {
     for (const_iterator it = begin(); it != end(); ++it)
       updateToLowerBound(*it);
   }
-#ifdef DEBUG
+#ifdef MATHIC_DEBUG
   template<class C, class EE>
   bool KDEntryArray<C, EE>::debugIsValid() const {
     MATHIC_ASSERT(C::AllowRemovals || !empty());
