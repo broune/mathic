@@ -124,7 +124,7 @@ TEST(PairQueue, Ordering) {
   while (!pq.empty()) {
 	// Extract top pair and top pairdata and check that doing that in
 	// either order works.
-	std::pair<Index, Index> p;
+	std::pair<size_t, size_t> p;
 	std::string pd;
 	if ((pq.size() % 2) == 0) {
 	  pd = pq.topPairData();
@@ -140,11 +140,11 @@ TEST(PairQueue, Ordering) {
 	  Index const* begin = rows;
 	  Index const* end = rows + sizeof(rows) / sizeof(rows[0]);
 	  pq.addColumnDescending(begin, end);
-	  ASSERT_EQ((std::make_pair<Index, Index>(112, 0)), pq.topPair());
+	  ASSERT_EQ((std::make_pair<size_t, size_t>(112, 0)), pq.topPair());
 	  ASSERT_EQ("11209", pq.topPairData());
 	  pq.pop();
 	  ASSERT_EQ("1121119", pq.topPairData());
-	  ASSERT_EQ((std::make_pair<Index, Index>(112, 111)), pq.topPair());
+	  ASSERT_EQ((std::make_pair<size_t, size_t>(112, 111)), pq.topPair());
 	  pq.pop();
 	  // should be back at same place now
 	  ASSERT_EQ(pd, pq.topPairData());
@@ -189,13 +189,13 @@ TEST(PairQueue, LargeIndices) {
 	pq.addColumnDescending(rows, rows);
   ASSERT_EQ(100100, pq.columnCount());
   pq.addColumnDescending(rows, rows + sizeof(rows) / sizeof(rows[0]));
-  ASSERT_EQ((std::make_pair<Index, Index>(100100, 0)), pq.topPair());
+  ASSERT_EQ((std::make_pair<size_t, size_t>(100100, 0)), pq.topPair());
   ASSERT_EQ("10010007", pq.topPairData());
   pq.pop();
-  ASSERT_EQ((std::make_pair<Index, Index>(100100, 100000)), pq.topPair());
+  ASSERT_EQ((std::make_pair<size_t, size_t>(100100, 100000)), pq.topPair());
   ASSERT_EQ("1001001000007", pq.topPairData());
   pq.pop();
-  ASSERT_EQ((std::make_pair<Index, Index>(1, 0)), pq.topPair());
+  ASSERT_EQ((std::make_pair<size_t, size_t>(1, 0)), pq.topPair());
   ASSERT_EQ("107", pq.topPairData());
   pq.pop();
 }
