@@ -27,7 +27,8 @@ libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp	\
   src/mathic/error.cpp src/mathic/HelpAction.cpp					\
   src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp	\
   src/mathic/display.cpp src/mathic/BitTriangle.cpp					\
-  src/mathic/PairQueue.cpp
+  src/mathic/PairQueue.cpp \
+  src/mathic/HashTable.cpp
 
 # The headers that libmathic installs.
 # Normally, automake strips the path from the files when installing them,
@@ -97,4 +98,5 @@ unittest_LDFLAGS= $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 test_LIBS=
 unittest_SOURCES=src/test/DivFinder.cpp src/test/gtestInclude.cpp	\
   src/test/testMain.cpp src/test/BitTriangle.cpp					\
-  src/test/PairQueue.cpp
+  src/test/PairQueue.cpp \
+  src/test/HashTable.cpp
