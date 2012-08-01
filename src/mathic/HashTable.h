@@ -11,8 +11,10 @@
 #ifndef MATHIC_HASHTABLE_GUARD
 #define MATHIC_HASHTABLE_GUARD
 
+#include <memtailor.h>
 #include "stdinc.h"
-
+#include <utility>
+#include <string>
 namespace mathic {
 
   template<class Configuration> 
@@ -35,9 +37,10 @@ namespace mathic {
   public:
     typedef C Configuration;
     typedef void * node;
-
+    typedef typename C::Key Key;
+    typedef typename C::Value Value;
     // Create a hash table
-    HashTable(Configuration &conf, unsigned int nbits = 10);
+    HashTable(const Configuration &conf, unsigned int nbits = 10);
 
     ~HashTable() {}
 
@@ -74,7 +77,7 @@ namespace mathic {
     std::string name() const;
 
   private:
-    struct node {
+    struct Node {
       Node *next;
       Key k;
       Value v;
@@ -97,7 +100,7 @@ namespace mathic {
   };
 
   template<class C>
-  HashTable::HashTable(const Configuration &conf, unsigned int nbits):
+  HashTable<C>::HashTable(const Configuration &conf, unsigned int nbits):
     mLogTableSize(nbits),
     mTableSize(1 << nbits),
     mHashMask((1 << nbits) - 1),
@@ -118,4 +121,6 @@ namespace mathic {
 
 // Local Variables:
 // indent-tabs-mode: nil
+// compile-command: "make -C $MATHIC/mathic "
 // End:
+
