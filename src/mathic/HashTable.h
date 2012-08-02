@@ -8,6 +8,9 @@
 //  3. resizing
 //  4. put ASSERT's in, to check for all manner of contracts
 
+// Notes to self:
+// see http://attractivechaos.wordpress.com/2008/08/28/comparison-of-hash-table-libraries/
+
 #ifndef MATHIC_HASHTABLE_GUARD
 #define MATHIC_HASHTABLE_GUARD
 
@@ -66,6 +69,8 @@ namespace mathic {
     // else return std::pair(true, node in the hash table).
     std::pair<bool, Node *> insert(const Key &k, const Value &v);
 
+    Node * lookup(const Key &k);
+
     // remove 'p' from the hash table.  'p' itself is not removed???!
     void remove(Node *p);
 
@@ -87,6 +92,7 @@ namespace mathic {
 
   private:
     Node * makeNode(const Key &k, const Value &v);
+
     void grow(unsigned int nbits);
 
     // Used for consistency checking.  Returns the number of nodes in the table.
@@ -153,8 +159,7 @@ namespace mathic {
   template<class C>
   std::pair<bool, typename HashTable<C>::Node *> HashTable<C>::insert(const Key &k, const Value &v) 
   {
-    size_t fullHashVal = mConf.hashValue(k);
-    size_t hashval = fullHashVal & mHashMask;
+    size_t hashval = mConf.hash(k) & mHashMask;
     
     MATHIC_ASSERT(hashval < mHashTable.size());
     Node *tmpNode = mHashTable[hashval];
@@ -198,6 +203,20 @@ namespace mathic {
     
     MATHIC_ASSERT(computeNodeCount() == mNodeCount);
     return std::pair<bool, Node *>(true,result);
+  }
+
+  template<class C>
+  typename HashTable<C>::Node * HashTable<C>::lookup(const Key &k)
+  {
+    size_t hashval = mConf.hash(k) & mHashMask;
+    
+    MATHIC_ASSERT(hashval < mHashTable.size());
+    for (Node *p = mHashTable[hashval]; p != 0; p = p->next)
+      {
+	if (mConf.keysEqual(p->key, k))
+	  return p;
+      }
+    return NULL;
   }
     
   template<class C>
@@ -246,7 +265,7 @@ namespace mathic {
 	    p = p->next;
 	    q->next = 0;
 	    // Reinsert node.  We know that it is unique
-	    size_t hashval = mConf.hashvalue(q->key) & mHashMask;
+	    size_t hashval = mConf.hash(q->key) & mHashMask;
 	    Node *r = mHashTable[hashval];
 	    if (r == 0) mBinCount++;
 	    if (r == 0 || !mAlwaysInsertAtEnd) 
