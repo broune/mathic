@@ -1,4 +1,4 @@
-// Include this file to pull in all external MemTailor files
+// Include this file to pull in all external Mathic files
 
 // utilities
 #include "mathic/Timer.h"
@@ -18,6 +18,7 @@
 #include "mathic/StlSet.h"
 #include "mathic/Heap.h"
 #include "mathic/Geobucket.h"
+#include "mathic/PairQueue.h"
 
 // CLI package
 #include "mathic/Action.h"
