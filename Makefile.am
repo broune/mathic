@@ -50,7 +50,9 @@ mathicB_include_HEADERS = src/mathic/Action.h src/mathic/Geobucket.h	\
   src/mathic/DivList.h src/mathic/StlSet.h src/mathic/DivMask.h			\
   src/mathic/StringParameter.h src/mathic/ElementDeleter.h				\
   src/mathic/Timer.h src/mathic/error.h src/mathic/TourTree.h			\
-  src/mathic/BitTriangle.h
+  src/mathic/BitTriangle.h \
+  src/mathic/PairQueue.h \
+  src/mathic/HashTable.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = build/autotools/mathic-$(MATHIC_API_VERSION).pc

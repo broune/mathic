@@ -8,6 +8,7 @@
 
 // other data structures
 #include "mathic/BitTriangle.h"
+#include "mathic/HashTable.h"
 
 // divisor query data structures
 #include "mathic/DivList.h"
