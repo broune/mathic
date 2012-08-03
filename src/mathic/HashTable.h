@@ -45,6 +45,18 @@ namespace mathic {
     typedef typename C::Key Key;
     typedef typename C::Value Value;
 
+    // Allowed actions for a Node* returned by lookup or insert:
+    //  1. Key is const, while the Node* is in the hash table.
+    //  2. Value can be modified by the callee at any time
+    //  3. The 'next' field should not be referenced.
+    // As for allocating and deallocating Node*:
+    //  Do not allocate your own: only use Node* 's returned by the package
+    //  There is no need to deallocate a Node*:  when a 'reset() is done, all
+    //   Node* 's which have been allocated are deallocated at one time.
+    //   When this happens, the Key and Value are not deallocated?
+    // If 'remove' returns a Node*, then it is safe to change the key and/or value, e.g.
+    //  to free the space pointed to by 'key' (if that is a pointer value, for instance).
+
     struct Node {
       Node *next;
       Key key;
@@ -67,16 +79,18 @@ namespace mathic {
     // If combine returns false, then remove the node from the hash table.
     // and return std::pair(false, ...)
     // else return std::pair(true, node in the hash table).
-    std::pair<bool, Node *> insert(const Key &k, const Value &v);
+    std::pair<bool, Node*> insert(Key const& k, Value const& v);
 
-    Node * lookup(const Key &k);
+    // If 'k' is present in the hash table, then its 'Node*' is returned.
+    // If not, then NULL is returned.
+    Node* lookup(const Key &k);
 
     // remove 'p' from the hash table.  'p' itself is not removed???!
-    void remove(Node *p);
+    void remove(Node* p);
 
-    const Key &key(Node *p) const {return p->key;}
+    const Key& key(Node* p) const {return p->key;}
 
-    const Value &value(Node *p) const {return p->value;}
+    const Value& value(Node* p) const {return p->value;}
 
     void reset(); // Major assumption: all nodes have been removed from the table already
 
@@ -91,7 +105,7 @@ namespace mathic {
     std::string name() const;
 
   private:
-    Node * makeNode(const Key &k, const Value &v);
+    Node* makeNode(const Key &k, const Value &v);
 
     void grow(unsigned int nbits);
 
