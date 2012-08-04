@@ -32,7 +32,6 @@ namespace mathic {
 
     size_t hash(Key k);
     bool keysEqual(Key k1, Key k2);
-    void combine(Value &a, const Value &b);
   };
 
   template<class Configuration> 
@@ -57,10 +56,22 @@ namespace mathic {
     // If 'remove' returns a Node*, then it is safe to change the key and/or value, e.g.
     //  to free the space pointed to by 'key' (if that is a pointer value, for instance).
 
-    struct Node {
-      Node *next;
-      Key key;
-      Value value;
+    class Handle {
+    public:
+      friend class HashTable;
+
+      Handle(Key k, Value v):
+	next(0),
+	entry(k,v)
+      {}
+
+      const Key& key() const {return entry.first;}
+      const Value& value() const {return entry.second;}
+      Value& value() {return entry.second;}
+      void setKeyButOnlyDoSoIfThisHandleIsNotInHashTable(Key &new_k) {entry.first=new_k;}
+    private:
+      Handle *next;
+      std::pair<Key, Value> entry;
     };
 
     // Create a hash table
@@ -75,22 +86,17 @@ namespace mathic {
     Configuration const& configuration() const {return mConf;}
 
     // insert the key 'k' into the hash table.  If the key is already there,
-    // call C.combine on the old and new values.
-    // If combine returns false, then remove the node from the hash table.
     // and return std::pair(false, ...)
     // else return std::pair(true, node in the hash table).
-    std::pair<bool, Node*> insert(Key const& k, Value const& v);
+    std::pair<bool, Handle*> insert(Key const& k, Value const& v);
 
     // If 'k' is present in the hash table, then its 'Node*' is returned.
     // If not, then NULL is returned.
-    Node* lookup(const Key &k);
+    Handle* lookup(const Key &k);
 
-    // remove 'p' from the hash table.  'p' itself is not removed???!
-    void remove(Node* p);
-
-    const Key& key(Node* p) const {return p->key;}
-
-    const Value& value(Node* p) const {return p->value;}
+    // remove 'p' from the hash table.  'p' itself is also removed.
+    // what about the entries in 'p'?  Are the destructors called?
+    void remove(Handle* & p);
 
     void reset(); // Major assumption: all nodes have been removed from the table already
 
@@ -105,7 +111,7 @@ namespace mathic {
     std::string name() const;
 
   private:
-    Node* makeNode(const Key &k, const Value &v);
+    Handle* makeNode(const Key &k, const Value &v);
 
     void grow(unsigned int nbits);
 
@@ -132,7 +138,7 @@ namespace mathic {
     bool mAlwaysInsertAtEnd;
 
     memt::BufferPool mNodePool;
-    std::vector<Node *> mHashTable;
+    std::vector<Handle *> mHashTable;
     Configuration mConf;
   };
 
@@ -145,7 +151,7 @@ namespace mathic {
     mBinCount(0),
     mRebuildThreshold(0.1),
     mAlwaysInsertAtEnd(true),
-    mNodePool(sizeof(Node)),
+    mNodePool(sizeof(Handle)),
     mConf(conf) 
   {
     mHashTable.resize(mTableSize);
@@ -160,24 +166,22 @@ namespace mathic {
   }
 
   template<class C>
-  typename HashTable<C>::Node *HashTable<C>::makeNode(const Key &k, const Value &v)
+  typename HashTable<C>::Handle *HashTable<C>::makeNode(const Key &k, const Value &v)
   {
     mNodeCount++;
-    Node *result = static_cast<Node *>(mNodePool.alloc());
-    result->next = 0;
-    result->key = k;
-    result->value = v;
+    void *buf = mNodePool.alloc();
+    Handle* result = new (buf) Handle(k,v);
     return result;
   }
 
   template<class C>
-  std::pair<bool, typename HashTable<C>::Node *> HashTable<C>::insert(const Key &k, const Value &v) 
+  std::pair<bool, typename HashTable<C>::Handle *> HashTable<C>::insert(const Key &k, const Value &v) 
   {
     size_t hashval = mConf.hash(k) & mHashMask;
     
     MATHIC_ASSERT(hashval < mHashTable.size());
-    Node *tmpNode = mHashTable[hashval];
-    Node *result = 0;
+    Handle *tmpNode = mHashTable[hashval];
+    Handle *result = 0;
     if (tmpNode == 0)
       {
 	result = makeNode(k,v);
@@ -187,11 +191,10 @@ namespace mathic {
       {
 	while (true)
 	  {
-	    if (mConf.keysEqual(tmpNode->key, k))
+	    if (mConf.keysEqual(tmpNode->key(), k))
 	      {
-		mConf.combine(tmpNode->value, v);
 		result = tmpNode;
-		return std::pair<bool,Node *>(false,result);
+		return std::pair<bool,Handle *>(false,result);
 	      }
 	    if (tmpNode->next == 0)
 	      {
@@ -216,38 +219,39 @@ namespace mathic {
       grow(mLogTableSize + 2);  // increase by a factor of 4??
     
     MATHIC_ASSERT(computeNodeCount() == mNodeCount);
-    return std::pair<bool, Node *>(true,result);
+    return std::pair<bool, Handle *>(true,result);
   }
 
   template<class C>
-  typename HashTable<C>::Node * HashTable<C>::lookup(const Key &k)
+  typename HashTable<C>::Handle * HashTable<C>::lookup(const Key &k)
   {
     size_t hashval = mConf.hash(k) & mHashMask;
     
     MATHIC_ASSERT(hashval < mHashTable.size());
-    for (Node *p = mHashTable[hashval]; p != 0; p = p->next)
+    for (Handle *p = mHashTable[hashval]; p != 0; p = p->next)
       {
-	if (mConf.keysEqual(p->key, k))
+	if (mConf.keysEqual(p->key(), k))
 	  return p;
       }
     return NULL;
   }
     
   template<class C>
-  void HashTable<C>::remove(Node *p) 
+  void HashTable<C>::remove(Handle *& p) 
   {
     mNodeCount--;
     size_t const hashval = mConf.hashvalue(p->key) & mHashMask;
-    Node head;
-    Node* tmpNode = mHashTable[hashval];
+    Handle head;
+    Handle* tmpNode = mHashTable[hashval];
     head.next = tmpNode;
-    for (Node* q = &head; q->next != 0; q = q->next) 
+    for (Handle* q = &head; q->next != 0; q = q->next) 
       {
 	if (q->next == p) 
 	  {
 	    q->next = p->next;
 	    mHashTable[hashval] = head.next;
 	    if (head.next == 0) mBinCount--;
+	    //TODO: call destructor for pair, then call 'free' with the mNodePool
 	    return;
 	  }
       }
@@ -266,21 +270,21 @@ namespace mathic {
     mTableSize = static_cast<size_t>(1) << new_nbits;
     mLogTableSize = new_nbits;
     mHashMask = mTableSize-1;
-    std::vector<Node *> old_table(mTableSize);
+    std::vector<Handle *> old_table(mTableSize);
     std::swap(old_table, mHashTable);
 
     mBinCount = 0;
     for (size_t i = 0; i < old_table_size; ++i)
       {
-	Node *p = old_table[i];
+	Handle *p = old_table[i];
 	while (p != 0)
 	  {
-	    Node *q = p;
+	    Handle *q = p;
 	    p = p->next;
 	    q->next = 0;
 	    // Reinsert node.  We know that it is unique
-	    size_t hashval = mConf.hash(q->key) & mHashMask;
-	    Node *r = mHashTable[hashval];
+	    size_t hashval = mConf.hash(q->key()) & mHashMask;
+	    Handle *r = mHashTable[hashval];
 	    if (r == 0) mBinCount++;
 	    if (r == 0 || !mAlwaysInsertAtEnd) 
 	      {
@@ -305,7 +309,7 @@ namespace mathic {
   template<class C>
   size_t HashTable<C>::memoryUse() const
   {
-    size_t result = mHashTable.capacity() * sizeof(Node *);
+    size_t result = mHashTable.capacity() * sizeof(Handle *);
     result += mNodePool.getMemoryUse();
     return result;
   }
@@ -316,7 +320,7 @@ namespace mathic {
     size_t result = 0;
     for (size_t i=0; i<mTableSize; i++)
       {
-	for (Node *p = mHashTable[i]; p != 0; p = p->next) result++;
+	for (Handle *p = mHashTable[i]; p != 0; p = p->next) result++;
       }
     return result;
   }
