@@ -156,8 +156,6 @@ namespace mathic {
   {
     mHashTable.resize(mTableSize);
     mMaxCountBeforeRebuild = mRebuildThreshold * mTableSize;
-    
-    MATHIC_ASSERT(tableIsZero(mHashTable));
   }
   
   template<class C>
