@@ -56,10 +56,6 @@ AC_PROG_INSTALL
 # Locate the C++ compiler.
 AC_PROG_CXX
 
-# Locate the archiver. This is only necessary in case of using an
-# unusual archiver such as Microsoft lib.
-AM_PROG_AR
-
 # Set up LibTool
 LT_INIT
 
