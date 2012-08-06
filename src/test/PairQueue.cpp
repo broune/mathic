@@ -41,11 +41,11 @@ TEST(PairQueue, NoOp) {
   ASSERT_EQ(421, pq.configuration().id());
 };
 
-TEST(PairQueue, emptyAndSizeAndColumnCount) {
+TEST(PairQueue, emptyAndPairCountAndColumnCount) {
   mathic::PairQueue<PQConf> pq(PQConf(1));
 
   ASSERT_TRUE(pq.empty());
-  ASSERT_EQ(0, pq.size());
+  ASSERT_EQ(0, pq.pairCount());
   ASSERT_EQ(0, pq.columnCount());
   size_t const columnCount = 7;
   mathic::PairQueue<PQConf>::Index rows[columnCount - 1] = {0,1,2,3,4,5};
@@ -54,34 +54,34 @@ TEST(PairQueue, emptyAndSizeAndColumnCount) {
 	// single-digit indicies are sorted just by their numerical value
 	pq.addColumnDescending(rows, rows + i);
 	ASSERT_EQ(i == 0, pq.empty());
-	ASSERT_EQ((i * (i + 1)) / 2, pq.size()) << "i = " << i;
+	ASSERT_EQ((i * (i + 1)) / 2, pq.pairCount()) << "i = " << i;
 	ASSERT_EQ(i + 1, pq.columnCount());
   }
   size_t pairCount = (columnCount * (columnCount - 1)) / 2;
   ASSERT_FALSE(pq.empty());
-  ASSERT_EQ(pairCount, pq.size());
+  ASSERT_EQ(pairCount, pq.pairCount());
   ASSERT_EQ(columnCount, pq.columnCount());
 
   // add empty column
   pq.addColumnDescending(rows, rows);
   ASSERT_FALSE(pq.empty());
-  ASSERT_EQ(pairCount, pq.size());
+  ASSERT_EQ(pairCount, pq.pairCount());
   ASSERT_EQ(columnCount + 1, pq.columnCount());
 
   // add a 2-element column
   pq.addColumnDescending(rows, rows + 2);
   pairCount += 2;
   ASSERT_FALSE(pq.empty());
-  ASSERT_EQ(pairCount, pq.size());
+  ASSERT_EQ(pairCount, pq.pairCount());
   ASSERT_EQ(columnCount + 2, pq.columnCount());
 
   for (size_t i = 0; i < pairCount; ++i) {
-	ASSERT_EQ(pairCount - i, pq.size());
+	ASSERT_EQ(pairCount - i, pq.pairCount());
 	ASSERT_FALSE(pq.empty());
 	pq.pop();
   }
   ASSERT_TRUE(pq.empty());
-  ASSERT_EQ(0, pq.size());
+  ASSERT_EQ(0, pq.pairCount());
   ASSERT_EQ(columnCount + 2, pq.columnCount());
 
   pq.addColumnDescending(rows, rows); // empty column
@@ -126,7 +126,7 @@ TEST(PairQueue, Ordering) {
 	// either order works.
 	std::pair<size_t, size_t> p;
 	std::string pd;
-	if ((pq.size() % 2) == 0) {
+	if ((pq.pairCount() % 2) == 0) {
 	  pd = pq.topPairData();
 	  p = pq.topPair();
 	} else {

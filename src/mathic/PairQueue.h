@@ -120,7 +120,7 @@ namespace mathic {
 
 	// Returns how many pairs are in the triangle. O(columnCount())
 	// time.
-	size_t size() const;
+	size_t pairCount() const;
 
 	// Returns true if there are no pairs in the triangle. O(1) time.
 	bool empty() const;
@@ -405,7 +405,7 @@ namespace mathic {
   }
 
   template<class C>
-  size_t PairQueue<C>::size() const {
+  size_t PairQueue<C>::pairCount() const {
 	ColumnSizeSummer summer;
 	mColumnQueue.forAll(summer);
 	return summer.sizeSum();
