@@ -1,8 +1,14 @@
 #ifndef MATHIC_STDINC_GUARD
 #define MATHIC_STDINC_GUARD
 
-#if (defined MATHIC_DEBUG) && (defined MATHIC_NDEBUG)
-#error Both MATHIC_DEBUG and MATHIC_NDEBUG defined
+#ifdef MATHIC_SLOW_DEBUG
+// for asserts that take a long time.
+#define MATHIC_SLOW_ASSERT(X) MATHIC_ASSERT(X)
+#ifndef MATHIC_DEBUG
+#define MATHIC_DEBUG
+#endif
+#else
+#define MATHIC_SLOW_ASSERT(X)
 #endif
 
 #ifdef MATHIC_DEBUG
@@ -13,7 +19,7 @@
 #endif
 
 namespace mathic {
-  static const unsigned long BitsPerByte = 8;
+  static unsigned long const BitsPerByte = 8;
 }
 
 #ifndef MATHIC_NO_MIC_NAMESPACE

@@ -142,7 +142,7 @@ namespace mathic {
   }
 
   template<class E, bool FI>
-	E& ComTree<E, FI>::operator[](Node n) {
+  inline E& ComTree<E, FI>::operator[](Node n) {
 	if (!FI)
 	  return _array[n._index];
 	char* base = reinterpret_cast<char*>(_array);
@@ -152,7 +152,7 @@ namespace mathic {
   }
 
   template<class E, bool FI>
-	const E& ComTree<E, FI>::operator[](Node n) const {
+  inline const E& ComTree<E, FI>::operator[](Node n) const {
 	return const_cast<ComTree<E, FI>*>(this)->operator[](n);
   }
 

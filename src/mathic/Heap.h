@@ -93,7 +93,7 @@ namespace mathic {
 	void Heap<C>::push(Entry entry) {
 	_tree.pushBack(entry);
 	moveValueUp(_tree.lastLeaf(), entry);
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
   }
 
   template<class C>
@@ -106,11 +106,12 @@ namespace mathic {
   template<class C>
 	void Heap<C>::decreaseTop(Entry newEntry) {
 	moveValueUp(moveHoleDown(Node()), newEntry);
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
   }
 
   template<class C>
   void Heap<C>::clear() {
+	MATHIC_ASSERT(isValid());
     _tree.clear();
 	MATHIC_ASSERT(isValid());
   }
@@ -123,7 +124,7 @@ namespace mathic {
 	if (!_tree.empty())
 	  moveValueUp(moveHoleDown(Node()), movedValue);
 	return top;
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
   }
 
   template<class C>
@@ -174,7 +175,7 @@ namespace mathic {
 		value = _tree[_tree.lastLeaf()];
 		_tree.popBack();
 		if (origPos == _tree.lastLeaf().next()) {
-		  MATHIC_ASSERT(isValid());
+		  MATHIC_SLOW_ASSERT(isValid());
 		  return;
 		}
 		goto again;
@@ -182,7 +183,7 @@ namespace mathic {
 		break;
 	}
 	_tree[pos] = value;
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
   }
 
 #ifdef MATHIC_DEBUG

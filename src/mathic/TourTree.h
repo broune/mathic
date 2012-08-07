@@ -81,8 +81,10 @@ namespace mathic {
 
   template<class C>
   void TourTree<C>::clear() {
+	MATHIC_ASSERT(isValid());
     _tree.clear();
     _players.clear();
+	MATHIC_ASSERT(isValid());
   }
 
   template<class C>
@@ -105,13 +107,13 @@ namespace mathic {
 
   template<class C>
 	void TourTree<C>::push(Entry entry) {
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
 	if (!_tree.hasFreeCapacity(2))
 	  reallocate();
 	if (empty()) {
 	  _players.push_back(Player(entry, Node()));
 	  _tree.pushBackWithCapacity(&_players.back());
-	  MATHIC_ASSERT(isValid());
+	  MATHIC_SLOW_ASSERT(isValid());
 	  return;
 	}
 	// move leaf down as left child
@@ -138,7 +140,7 @@ namespace mathic {
 	  pos = posParent;
 	  posParent = pos.parent();
 	} while (!pos.isRoot());
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
   }
 
   template<class C>
@@ -159,7 +161,7 @@ namespace mathic {
 		player = opponent;
 	  _tree[pos.parent()] = player;
 	}
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
   }
 
   template<class C>
@@ -169,7 +171,7 @@ namespace mathic {
 	if (_tree.lastLeaf().isRoot()) {
 	  _tree.popBack();
 	  _players.pop_back();
-	  MATHIC_ASSERT(isValid());
+	  MATHIC_SLOW_ASSERT(isValid());
 	  return top;
 	}
 	Node parentPos = _tree.lastLeaf().parent();
@@ -202,7 +204,7 @@ namespace mathic {
 	  pos = pos.parent();
 	  _tree[pos] = player;
 	}
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
 	return top;
   }
 
@@ -219,6 +221,7 @@ namespace mathic {
 
   template<class C>
 	void TourTree<C>::reallocate() {
+	MATHIC_ASSERT(isValid());
 	_tree.increaseCapacity();
 	const size_t newCapacity = _tree.capacity();
 	if (_players.empty())
@@ -236,7 +239,9 @@ namespace mathic {
 #ifdef MATHIC_DEBUG
   template<class C>
 	bool TourTree<C>::isValid() const {
-	MATHIC_ASSERT(_tree.capacity() + 1 <= 2 * _players.capacity());
+	MATHIC_ASSERT
+	  ((_tree.empty() && _players.empty()) || // just constructed
+	   (_tree.capacity() + 1 <= 2 * _players.capacity()));
 	MATHIC_ASSERT((empty() && _players.empty()) ||
 		   (_tree.size() + 1 == 2 * _players.size()));
 	// _tree points into _players

@@ -430,11 +430,12 @@ namespace mathic {
 		break;
 	  }
 	}
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
   }
 
   template<class C>
   void Geobucket<C>::clear() {
+	MATHIC_ASSERT(isValid());
     _entryCount = 0;
     _front.clear();
     for (Bucket* bucket = _bucketBegin; bucket != _bucketEnd; ++bucket)
@@ -450,7 +451,7 @@ namespace mathic {
 	maxBucket->pop_back();
 	--_entryCount;
 	_front.keyDecreased(maxBucket);
-	MATHIC_ASSERT(isValid());
+	MATHIC_SLOW_ASSERT(isValid());
 	return top;
   }
 
