@@ -36,6 +36,23 @@ namespace {
   };
 }
 
+namespace mathic {
+  namespace PairQueueNamespace {
+	template<>
+	struct SupportRetirement<PQConf> {
+	  static bool const value = false;
+	};
+  }
+}
+
+TEST(PairQueue, RetirementSetToFalse) {
+  ASSERT_FALSE(mathic::PairQueue<PQConf>::SupportRetirement);
+  mathic::PairQueue<PQConf> pq(PQConf(421));
+  mathic::PairQueue<PQConf>::Index* null = 0;
+  pq.addColumnDescending(null, null);
+  ASSERT_FALSE(pq.retired(0));
+}
+
 TEST(PairQueue, NoOp) {
   mathic::PairQueue<PQConf> pq(PQConf(421));
   ASSERT_EQ(421, pq.configuration().id());
@@ -208,7 +225,13 @@ namespace {
   class PQConDeconCounterConf {
   public:
 	// better not have two of these objects around at the same time!
-	PQConDeconCounterConf() {mLive.clear();}
+	PQConDeconCounterConf(): owningQueue(0) {mLive.clear();}
+
+	// This is the queue that this is the configuration of. You have
+	// to set it after constructing the queue. It has to be void* as
+	// we can't instantiate the type now before we specialize the
+	// parameters like mathic::PairQueueNamespace::SupportRetirement.
+	void* owningQueue;
 
 	class PairData {
 	  friend class PQConDeconCounterConf;
@@ -254,10 +277,7 @@ namespace {
 	  pd->~PairData();
 	}
 
-	void computePairData(size_t col, size_t row, PairData& pd) {
-	  MATHIC_ASSERT(pd.live());
-	  pd.row = row;
-	}
+	void computePairData(size_t col, size_t row, PairData& pd);
 
 	typedef bool CompareResult;
 	bool compare(int colA, int rowA, const PairData& pdA,
@@ -279,20 +299,41 @@ namespace {
 namespace mathic {
   namespace PairQueueNamespace {
 	template<>
-	void constructPairData
-	(void* memory, Index col, Index row, PQConDeconCounterConf& conf) {
-	  PQConDeconCounterConf::PairData* pd =
-		static_cast<PQConDeconCounterConf::PairData*>(memory);
-	  conf.construct(pd);
-	  conf.computePairData(col, row, *pd);
-	}
+	struct ConstructPairDataFunction<PQConDeconCounterConf> {
+	  static void function
+	  (void* memory, Index col, Index row, PQConDeconCounterConf& conf) {
+		PQConDeconCounterConf::PairData* pd =
+		  static_cast<PQConDeconCounterConf::PairData*>(memory);
+		conf.construct(pd);
+		conf.computePairData(col, row, *pd);
+	  }
+	};
 
 	template<>
-	void destructPairData
-	(PQConDeconCounterConf::PairData* pd,
-	 Index col, Index row, PQConDeconCounterConf& conf) {
-	  conf.destruct(pd);
-	}
+	struct DestructPairDataFunction<PQConDeconCounterConf> {
+	  static void function
+	  (PQConDeconCounterConf::PairData* pd,
+	   Index col, Index row, PQConDeconCounterConf& conf) {
+		conf.destruct(pd);
+	  }
+	};
+
+	template<>
+	struct SupportRetirement<PQConDeconCounterConf> {
+	  static bool const value = true;
+	};
+  }
+}
+
+namespace {
+  inline void PQConDeconCounterConf::computePairData
+	(size_t col, size_t row, PairData& pd) {
+	MATHIC_ASSERT(pd.live());
+	MATHIC_ASSERT(!static_cast<mathic::PairQueue<PQConDeconCounterConf>*>
+				  (owningQueue)->retired(col));
+	MATHIC_ASSERT(!static_cast<mathic::PairQueue<PQConDeconCounterConf>*>
+				  (owningQueue)->retired(row));
+	pd.row = row;
   }
 }
 
@@ -300,11 +341,13 @@ namespace mathic {
 // all PairData objects.
 TEST(PairQueue, ConDeconOfPairData) {
   size_t const columnCount = 7;
-  mathic::PairQueue<PQConf>::Index rows[columnCount - 1] = {0,1,2,3,4,5};
+  mathic::PairQueue<PQConDeconCounterConf>::Index
+	rows[columnCount - 1] = {0,1,2,3,4,5};
 
   // check that PairData get cleaned up for a PairQueue that ends up empty.
   {
 	mathic::PairQueue<PQConDeconCounterConf> pq((PQConDeconCounterConf()));
+	pq.configuration().owningQueue = &pq;
 	for (size_t i = 0; i < columnCount; ++i)
 	  pq.addColumnDescending(rows, rows + i);
 	pq.addColumnDescending(rows, rows);
@@ -320,6 +363,7 @@ TEST(PairQueue, ConDeconOfPairData) {
   // been pop'ed at all.
   {
 	mathic::PairQueue<PQConDeconCounterConf> pq((PQConDeconCounterConf()));
+	pq.configuration().owningQueue = &pq;
 	for (size_t i = 0; i < columnCount; ++i)
 	  pq.addColumnDescending(rows, rows + i);
 	pq.addColumnDescending(rows, rows);
@@ -331,6 +375,7 @@ TEST(PairQueue, ConDeconOfPairData) {
   // pop'ed but is not full.
   {
 	mathic::PairQueue<PQConDeconCounterConf> pq((PQConDeconCounterConf()));
+	pq.configuration().owningQueue = &pq;
 	for (size_t i = 0; i < columnCount; ++i)
 	  pq.addColumnDescending(rows, rows + i);
 	pq.addColumnDescending(rows, rows);
@@ -339,4 +384,68 @@ TEST(PairQueue, ConDeconOfPairData) {
 	  pq.pop();
   }
   ASSERT_EQ(0, PQConDeconCounterConf::liveCount());
+}
+
+TEST(PairQueue, RetirementSetToTrue) {
+  ASSERT_TRUE(mathic::PairQueue<PQConDeconCounterConf>::SupportRetirement);
+  mathic::PairQueue<PQConDeconCounterConf> pq((PQConDeconCounterConf()));
+  pq.configuration().owningQueue = &pq;
+  mathic::PairQueue<PQConf>::Index* null = 0;
+  pq.addColumnDescending(null, null);
+  ASSERT_TRUE(pq.empty());
+  ASSERT_FALSE(pq.retired(0));
+  pq.retireIndex(0);
+  ASSERT_TRUE(pq.retired(0));
+  ASSERT_TRUE(pq.empty());
+}
+
+TEST(PairQueue, Retirement) {
+  typedef mathic::PairQueue<PQConDeconCounterConf>::Index Index;
+  mathic::PairQueue<PQConDeconCounterConf> pq((PQConDeconCounterConf()));
+  pq.configuration().owningQueue = &pq;
+  Index const* null = 0;
+  pq.addColumnDescending(null, null);
+
+  {
+	Index const rows[] = {0};
+	pq.addColumnDescending(rows, rows + sizeof(rows) / sizeof(*rows));
+  }
+  {std::pair<size_t, size_t> p(1, 0); ASSERT_EQ(p, pq.topPair());}
+  
+  // retire higher component of the top pair
+  pq.retireIndex(1);
+  ASSERT_TRUE(pq.empty());
+  
+  {
+	Index const rows[] = {0};
+	pq.addColumnDescending(rows, rows + sizeof(rows) / sizeof(*rows));
+  }
+  {std::pair<size_t, size_t> p(2, 0); ASSERT_EQ(p, pq.topPair());}
+  {
+	Index const rows[] = {0,2};
+	pq.addColumnDescending(rows, rows + sizeof(rows) / sizeof(*rows));
+  }
+  ASSERT_EQ(0, pq.topPair().second);
+  {
+	Index const rows[] = {0,2,3};
+	pq.addColumnDescending(rows, rows + sizeof(rows) / sizeof(*rows));
+  }
+  ASSERT_EQ(0, pq.topPair().second);
+
+  // retire lower component of top pair
+  pq.retireIndex(0);
+  ASSERT_FALSE(pq.empty());
+  ASSERT_EQ(2, pq.topPair().second);
+
+  // retire component not involved in top pair
+  if (pq.topPair().first == 3) {
+	pq.retireIndex(4);
+	{std::pair<size_t, size_t> p(3, 2); ASSERT_EQ(p, pq.topPair());}
+  } else {
+	pq.retireIndex(3);
+	{std::pair<size_t, size_t> p(4, 2); ASSERT_EQ(p, pq.topPair());}
+  }
+  ASSERT_FALSE(pq.empty());
+  pq.pop();
+  ASSERT_TRUE(pq.empty());
 }

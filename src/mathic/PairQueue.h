@@ -62,18 +62,32 @@ namespace mathic {
 	// other way than to call this function.
 	//
 	// The default implementation default-constructs the PairData and
-	// then calls Configuration::computePairData. Specialize (do not
-	// overload) this template function for your particular
-	// configuration type if you want something else to happen -- for
-	// example you might not want default construction to occur.
+	// then calls Configuration::computePairData. Specialize
+	// ConstructPairDataFunction for your particular configuration
+	// type if you want something else to happen -- for example you
+	// might not want default construction to occur.
+	//
+	// You could also specialize constructPairData directly, but this
+	// is not recommended since C++ does not allow partial
+	// specialization of function templates. Hence fully or partially
+	// specializing ConstructPairDataFunction is a more general
+	// mechanism that you might as well use.
+	template<class Configuration>
+	struct ConstructPairDataFunction {
+	  typedef typename Configuration::PairData PairData;
+	  static void function
+	  (void* memory, Index col, Index row, Configuration& conf) {
+		MATHIC_ASSERT(memory != 0);
+		MATHIC_ASSERT(col > row);
+		PairData* pd = new (memory) PairData();
+		conf.computePairData(col, row, *pd);
+	  }
+	};
 	template<class Configuration>
 	void constructPairData
 	(void* memory, Index col, Index row, Configuration& conf) {
-	  MATHIC_ASSERT(memory != 0);
-	  MATHIC_ASSERT(col > row);
-	  typename Configuration::PairData* pd =
-		new (memory) typename Configuration::PairData();
-	  conf.computePairData(col, row, *pd);
+	  ConstructPairDataFunction<Configuration>::function
+		(memory, col, row, conf);
 	}
 
 	// Used by PairData<Configuration> to destruct a PairData object
@@ -81,29 +95,104 @@ namespace mathic {
 	// destructed in any other way than to call this function.
 	//
 	// The default implementation just calls the
-	// destructor. Specialize (do not overload) this template function
-	// for your particular configuration type if you want something
-	// else to happen -- for example PairData might hold memory
-	// allocated from a memory pool that you want to return to the
-	// pool but you do not want to put a reference to the memory pool
-	// inside every PairData.
+	// destructor. Specialize DestructPairDataFunction for your
+	// particular configuration type if you want something else to
+	// happen -- for example PairData might hold memory allocated from
+	// a memory pool that you want to return to the pool but you do
+	// not want to put a reference to the memory pool inside every
+	// PairData.
+	//
+	// You could also specialize destructPairData directly, but this
+	// is not recommended since C++ does not allow partial
+	// specialization of function templates. Hence fully or partially
+	// specializing DestructPairDataFunction is a more general
+	// mechanism that you might as well use.
+	template<class Configuration>
+	struct DestructPairDataFunction {
+	  typedef typename Configuration::PairData PairData;
+	  static void function
+	  (PairData* pd, Index col, Index row, Configuration& conf) {
+		MATHIC_ASSERT(pd != 0);
+		MATHIC_ASSERT(col > row);
+		pd->~PairData();
+	  }
+	};
 	template<class Configuration>
 	void destructPairData
 	(typename Configuration::PairData* pd,
 	 Index col, Index row, Configuration& conf) {
-	  MATHIC_ASSERT(pd != 0);
-	  MATHIC_ASSERT(col > row);
-	  typedef typename Configuration::PairData PairData;
-	  pd->~PairData();
+	  DestructPairDataFunction<Configuration>::function(pd, col, row, conf);
 	}
+
+	// Used by PairData<Configuration> to determine whether to allow
+	// retirement of indexes. The default is to allow it, but there is
+	// some overhead. This is configured separately from the
+	// configuration to decrease the minimal size of a working
+	// configuration.
+	template<class Configuration>
+	struct SupportRetirement {
+	  // the value field must be static bool const.
+	  static bool const value = true;
+	};
+  }
+
+  namespace PairQueueInternal {
+	// Derive with true parameter to support retirement and false to
+	// not support retirement. The main point of this is not just to
+	// save the memory for the bool, it's to make it clear to the
+	// compiler that nothing is retired when retirement is not
+	// supported.
+	//
+	// This class has to be outside the PairQueue class since partial
+	// specialization is not supported for template member classes of
+	// template classes.
+	template<bool supportRetirement>
+	class SupportRetirement {
+	public:
+	  void addNextIndex() {mRetired.push_back(false);}
+	  void undoAdd() {
+		MATHIC_ASSERT(!mRetired.empty());
+		mRetired.pop_back();
+	  }
+
+	  void retireIndex(size_t index) {
+		MATHIC_ASSERT(index < mRetired.size());
+		mRetired[index] = true;
+	  }
+
+	  bool retired(size_t index) const {
+		MATHIC_ASSERT(index < mRetired.size());
+		return mRetired[index];
+	  }
+
+	private:
+	  std::vector<char> mRetired;
+	};
+
+	template<>
+	class SupportRetirement<false> {
+	public:
+	  void addNextIndex() {}
+	  void undoAdd() {}
+
+	  void retireIndex(size_t index) {
+		MATHIC_ASSERT(false); // this method should not be called.
+	  }
+
+	  bool retired(size_t index) const {
+		return false;
+	  }
+	};
   }
 
   template<class C>
-  class PairQueue {
+  class PairQueue : private PairQueueInternal::SupportRetirement<PairQueueNamespace::SupportRetirement<C>::value> {
   public:
 	typedef C Configuration;
 	typedef typename C::PairData PairData;
 	typedef PairQueueNamespace::Index Index;
+	static bool const SupportRetirement =
+	  PairQueueNamespace::SupportRetirement<Configuration>::value;
 
 	// PairQueue stores a copy of the passed in configuration.
 	PairQueue(const Configuration& conf);
@@ -134,7 +223,7 @@ namespace mathic {
     // Returns the maximal pair according to the custom ordering on
 	// pairs.
 	std::pair<size_t, size_t> topPair() const;
-
+	
 	// Returns the PairData of topPair().
 	const PairData& topPairData() const;
 
@@ -149,10 +238,36 @@ namespace mathic {
 	// configured.
 	std::string name() const;
 
+	// Remove all pairs of the form (index,x) or (x,index). It is not
+	// allowed to add such pairs in future. You must not retire an
+	// index twice (that could be a bug and we want to assert in that
+	// case to surface the issue).
+	//
+	// ATTENTION: retired indexes can still appear in comparisons if
+	// that pair already has its PairData computed and stored and
+	// those comparisons must still work the same way that they did
+	// previously. No new PairData will be computed using retired
+	// indexes and of course topPair() will never involve a retired
+	// index.
+	//
+	// ATTENTION: All the retired pairs are not identified right away
+	// so pairCount() might still count some retired pairs.
+	//
+	// ATTENTION: If you have disabled support for retirement then you
+	// may not call this method.
+	void retireIndex(size_t index);
+
+	// Returns true if index has been retired. If support for
+	// retirement has been turned off then this method always returns
+	// false.
+	bool retired(size_t index) const;
+
   private:
 	typedef unsigned short SmallIndex;
 
-    class Column {
+	typedef PairQueueInternal::SupportRetirement<SupportRetirement> Retirer;
+
+    class Column  {
 	public:
 	  template<class Iter>
 	  static Column* create
@@ -162,7 +277,8 @@ namespace mathic {
 	  Index columnIndex() const {return mColumnIndex;}
 	  Index rowIndex() const;
 
-	  void incrementRowIndex(C& conf); // recomputes pairData if not empty
+	  // Recomputes pairData if not empty. Skips retired rows.
+	  void incrementRowIndex(PairQueue<C>& pq); 
 	  bool empty() const;
 	  size_t size() const; // number of pairs remaining in this column
 
@@ -342,25 +458,30 @@ namespace mathic {
   }
 
   template<class C>
-  void PairQueue<C>::Column::incrementRowIndex(C& conf) {
+  void PairQueue<C>::Column::incrementRowIndex(PairQueue<C>& pq) {
 	MATHIC_ASSERT(!empty());
 	if (big()) {
-	  ++bigBegin;
-	  if (bigBegin == bigEnd) {
-		MATHIC_ASSERT(empty());
-		destruct(*(bigBegin - 1), conf);
-		return;
-	  }
+	  do {
+		++bigBegin;
+		if (bigBegin == bigEnd) {
+		  MATHIC_ASSERT(empty());
+		  destruct(*(bigBegin - 1), pq.configuration());
+		  return;
+		}
+	  } while (PairQueue::SupportRetirement && pq.retired(*bigBegin));
 	} else {
-	  ++smallBegin;
-	  if (smallBegin == smallEnd) {
-		MATHIC_ASSERT(empty());
-		destruct(*(smallBegin - 1), conf);
-		return;
-	  }
+	  do {
+		++smallBegin;
+		if (smallBegin == smallEnd) {
+		  MATHIC_ASSERT(empty());
+		  destruct(*(smallBegin - 1), pq.configuration());
+		  return;
+		}
+	  } while (PairQueue::SupportRetirement && pq.retired(*smallBegin));
 	}
 	MATHIC_ASSERT(!empty());
-	conf.computePairData(columnIndex(), rowIndex(), mPairData);
+	MATHIC_ASSERT(!pq.retired(rowIndex()));
+	pq.configuration().computePairData(columnIndex(), rowIndex(), mPairData);
   }
 
   template<class C>
@@ -415,42 +536,70 @@ namespace mathic {
   template<class Iter>
   void PairQueue<C>::addColumnDescending
   (Iter const sortedRowsBegin, Iter const sortedRowsEnd) {
+#ifdef DEBUG
+	if (SupportRetirement) {
+	  for (Iter it = sortedRowsBegin; it != sortedRowsend; ++it)
+		MATHIC_ASSERT(!retired(*it));
+	}
+#endif
 	if (mColumnCount >= std::numeric_limits<Index>::max())
 	  throw std::overflow_error("Too large column index in PairQueue.");
 	Index const newColumnIndex = static_cast<Index>(mColumnCount);
+	Retirer::addNextIndex();
 	++mColumnCount;
-	if (sortedRowsBegin == sortedRowsEnd)
-	  return;
-	memt::Arena::Guard guard(mArena);
-
-	Column* column = Column::create
-	  (newColumnIndex, sortedRowsBegin, sortedRowsEnd, mConf, mArena);
-
-	try {
-	  mColumnQueue.push(column);
-	} catch (...) {
-	  column->destruct(mConf);
-	  throw;
+	if (sortedRowsBegin != sortedRowsEnd) {
+	  try {
+		memt::Arena::Guard guard(mArena);
+	
+		Column* column = Column::create
+		  (newColumnIndex, sortedRowsBegin, sortedRowsEnd, mConf, mArena);
+		
+		try {
+		  mColumnQueue.push(column);
+		} catch (...) {
+		  column->destruct(mConf);
+		  throw;
+		}
+		guard.release();
+	  } catch (...) {
+		Retirer::undoAdd();
+		--mColumnCount;
+		throw;
+	  }
 	}
-	guard.release();
   }
 
   template<class C>
   void PairQueue<C>::pop() {
 	MATHIC_ASSERT(!empty());
+	Column* topColumn = mColumnQueue.top();
+	do {
+	  MATHIC_ASSERT(!empty());
+	  MATHIC_ASSERT(topColumn == mColumnQueue.top());
+	  MATHIC_ASSERT(topColumn != 0);
+	  MATHIC_ASSERT(!topColumn->empty());
 
-	Column* const topColumn = mColumnQueue.top();
-	MATHIC_ASSERT(topColumn != 0);
-	MATHIC_ASSERT(!topColumn->empty());
-
-	// Note that all mathic queues allow doing this sequence of
-	// actions: top(), change top element in-place, do decreaseTop/pop.
-	topColumn->incrementRowIndex(mConf);
-	if (topColumn->empty()) {
+	  if (!SupportRetirement || !retired(topColumn->columnIndex())) {
+	    // Note that all mathic queues allow doing this sequence of
+		// actions: top(), change top element in-place, do decreaseTop/pop.
+		topColumn->incrementRowIndex(*this);
+		if (!topColumn->empty()) {
+		  MATHIC_ASSERT(!retired(topColumn->columnIndex()));
+		  MATHIC_ASSERT(!retired(topColumn->rowIndex()));
+		  mColumnQueue.decreaseTop(topColumn);
+		  goto doNotDestroy;
+		}
+	  }
 	  topColumn->destruct(mConf);
 	  mColumnQueue.pop();
-	} else
-	  mColumnQueue.decreaseTop(topColumn);
+	doNotDestroy:;
+	  if (!SupportRetirement || mColumnQueue.empty())
+		break;
+	  topColumn = mColumnQueue.top();
+	} while (retired(topColumn->columnIndex()) ||
+			 retired(topColumn->rowIndex()));
+	MATHIC_ASSERT(!SupportRetirement || empty() || !retired(topPair().first));
+	MATHIC_ASSERT(!SupportRetirement || empty() || !retired(topPair().second));
   }
 
   template<class C>
@@ -461,6 +610,24 @@ namespace mathic {
   template<class C>
   std::string PairQueue<C>::name() const {
 	return std::string("PairQueue-") + mColumnQueue.getName();
+  }
+
+  template<class C>
+  void PairQueue<C>::retireIndex(size_t index) {
+	MATHIC_ASSERT(SupportRetirement);
+	MATHIC_ASSERT(index < columnCount());
+	Retirer::retireIndex(index);
+	if (!empty()) {
+	  std::pair<size_t, size_t> p = topPair();
+	  if (p.first == index || p.second == index)
+		pop();
+	}
+  }
+
+  template<class C>
+  bool PairQueue<C>::retired(size_t index) const {
+	MATHIC_ASSERT(index < columnCount());
+	return Retirer::retired(index);
   }
 
   template<class C>
