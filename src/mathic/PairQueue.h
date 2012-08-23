@@ -538,7 +538,7 @@ namespace mathic {
   (Iter const sortedRowsBegin, Iter const sortedRowsEnd) {
 #ifdef DEBUG
 	if (SupportRetirement) {
-	  for (Iter it = sortedRowsBegin; it != sortedRowsend; ++it)
+	  for (Iter it = sortedRowsBegin; it != sortedRowsEnd; ++it)
 		MATHIC_ASSERT(!retired(*it));
 	}
 #endif
