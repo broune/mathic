@@ -155,7 +155,7 @@ namespace mathic {
     mConf(conf) 
   {
     mHashTable.resize(mTableSize);
-    mMaxCountBeforeRebuild = mRebuildThreshold * mTableSize;
+    mMaxCountBeforeRebuild = static_cast<size_t>(mRebuildThreshold * mTableSize);
   }
   
   template<class C>
@@ -214,7 +214,7 @@ namespace mathic {
       }
     
     if (mNodeCount > mMaxCountBeforeRebuild)
-      grow(mLogTableSize + 2);  // increase by a factor of 4??
+      grow(static_cast<unsigned int>(mLogTableSize + 2));  // increase by a factor of 4??
     
     MATHIC_ASSERT(computeNodeCount() == mNodeCount);
     return std::pair<bool, Handle *>(true,result);
