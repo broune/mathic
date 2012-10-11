@@ -1,0 +1,95 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathic-lib", "mathic-lib\mathic-lib.vcxproj", "{BEBD36F1-A124-4C01-8E67-3208D4472661}"
+	ProjectSection(ProjectDependencies) = postProject
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551} = {534C44F8-BA0A-4AF0-95F1-260CA8EF3551}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathic-test", "mathic-test\mathic-test.vcxproj", "{9B09A868-B169-43E8-AFF9-D2F12657ABCF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BEBD36F1-A124-4C01-8E67-3208D4472661} = {BEBD36F1-A124-4C01-8E67-3208D4472661}
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551} = {534C44F8-BA0A-4AF0-95F1-260CA8EF3551}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "memtailor-lib", "..\..\..\memtailor\build\vs12\memtailor-lib\memtailor-lib.vcxproj", "{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Debug-NoAssert|Win32 = Debug-NoAssert|Win32
+		Debug-NoAssert|x64 = Debug-NoAssert|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+		Release-Assert|Win32 = Release-Assert|Win32
+		Release-Assert|x64 = Release-Assert|x64
+		WarningAsError|Win32 = WarningAsError|Win32
+		WarningAsError|x64 = WarningAsError|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug|Win32.Build.0 = Debug|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug|x64.ActiveCfg = Debug|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug|x64.Build.0 = Debug|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug-NoAssert|Win32.ActiveCfg = Debug-NoAssert|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug-NoAssert|Win32.Build.0 = Debug-NoAssert|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug-NoAssert|x64.ActiveCfg = Debug-NoAssert|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Debug-NoAssert|x64.Build.0 = Debug-NoAssert|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release|Win32.ActiveCfg = Release|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release|Win32.Build.0 = Release|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release|x64.ActiveCfg = Release|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release|x64.Build.0 = Release|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release-Assert|Win32.ActiveCfg = Release-Assert|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release-Assert|Win32.Build.0 = Release-Assert|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release-Assert|x64.ActiveCfg = Release-Assert|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.Release-Assert|x64.Build.0 = Release-Assert|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.WarningAsError|Win32.ActiveCfg = WarningAsError|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.WarningAsError|Win32.Build.0 = WarningAsError|Win32
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.WarningAsError|x64.ActiveCfg = WarningAsError|x64
+		{BEBD36F1-A124-4C01-8E67-3208D4472661}.WarningAsError|x64.Build.0 = WarningAsError|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug|Win32.Build.0 = Debug|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug|x64.ActiveCfg = Debug|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug|x64.Build.0 = Debug|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug-NoAssert|Win32.ActiveCfg = Debug-NoAssert|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug-NoAssert|Win32.Build.0 = Debug-NoAssert|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug-NoAssert|x64.ActiveCfg = Debug-NoAssert|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Debug-NoAssert|x64.Build.0 = Debug-NoAssert|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release|Win32.ActiveCfg = Release|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release|Win32.Build.0 = Release|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release|x64.ActiveCfg = Release|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release|x64.Build.0 = Release|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release-Assert|Win32.ActiveCfg = Release-Assert|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release-Assert|Win32.Build.0 = Release-Assert|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release-Assert|x64.ActiveCfg = Release-Assert|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.Release-Assert|x64.Build.0 = Release-Assert|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.WarningAsError|Win32.ActiveCfg = WarningAsError|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.WarningAsError|Win32.Build.0 = WarningAsError|Win32
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.WarningAsError|x64.ActiveCfg = WarningAsError|x64
+		{9B09A868-B169-43E8-AFF9-D2F12657ABCF}.WarningAsError|x64.Build.0 = WarningAsError|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug|Win32.ActiveCfg = Debug|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug|Win32.Build.0 = Debug|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug|x64.ActiveCfg = Debug|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug|x64.Build.0 = Debug|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug-NoAssert|Win32.ActiveCfg = Debug-NoAssert|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug-NoAssert|Win32.Build.0 = Debug-NoAssert|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug-NoAssert|x64.ActiveCfg = Debug-NoAssert|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Debug-NoAssert|x64.Build.0 = Debug-NoAssert|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release|Win32.ActiveCfg = Release|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release|Win32.Build.0 = Release|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release|x64.ActiveCfg = Release|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release|x64.Build.0 = Release|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release-Assert|Win32.ActiveCfg = Release-Assert|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release-Assert|Win32.Build.0 = Release-Assert|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release-Assert|x64.ActiveCfg = Release-Assert|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.Release-Assert|x64.Build.0 = Release-Assert|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.WarningAsError|Win32.ActiveCfg = WarningAsError|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.WarningAsError|Win32.Build.0 = WarningAsError|Win32
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.WarningAsError|x64.ActiveCfg = WarningAsError|x64
+		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551}.WarningAsError|x64.Build.0 = WarningAsError|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

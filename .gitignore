@@ -11,9 +11,6 @@
 *.la
 *.a
 
-# Executables (in Cygwin)
-*.exe
-
 # Emacs backup files
 \#*\#
 *~
@@ -30,3 +27,19 @@ Makefile.in
 Makefile
 configure
 .libs/
+
+# Visual studio generated files
+*.suo
+*.sdf
+*.opensdf
+*.vcxproj.user
+intermediate/
+output/
+
+# Configure build targets
+deb/
+debnoass/
+pro/
+rel/
+relass/
+

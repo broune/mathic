@@ -11,4 +11,8 @@ namespace mathic {
     unsigned long divHits = 0;
   }
 }
+#else
+// The purpose of dummy is to silence a MSVC linker warning
+// that says that this file is not adding anything to the build.
+namespace {void dummy(){}}
 #endif

@@ -25,7 +25,7 @@ namespace {
 	}
 	bool cmpLessThan(bool v) const {return v;}
 
-	std::string pairString(int col, int row) const {
+	std::string pairString(size_t col, size_t row) const {
 	  std::ostringstream out;
 	  out << col << row << mId;
 	  return out.str();

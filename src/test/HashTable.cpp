@@ -1,6 +1,7 @@
 #include "mathic/HashTable.h"
 #include <gtest/gtest.h>
-#include <tr1/functional>
+#include <string>
+#include <functional>
 
 namespace {
   class HashTableConf 
@@ -37,7 +38,7 @@ namespace {
   public:
     typedef std::string Key;
     typedef size_t Value;
-    typedef std::tr1::hash<std::string> hashfcn;
+    typedef std::hash<std::string> hashfcn;
     size_t hash(Key k) { 
       hashfcn fcn; 
       return fcn(k);

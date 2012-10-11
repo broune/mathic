@@ -162,11 +162,16 @@ namespace mathic {
 
 	  bool retired(size_t index) const {
 		MATHIC_ASSERT(index < mRetired.size());
-		return mRetired[index];
+        // if we just cast to bool here the compiler has to ensure that the
+        // value is not something other than 0 or 1. By reinterpreting the
+        // reference as a bool we free the compiler from this obligation.
+		return reinterpret_cast<const bool&>(mRetired[index]);
 	  }
 
 	private:
-	  std::vector<char> mRetired;
+      // using char in place of bool to avoid the slow specialization
+      // for std::vector<bool>
+      std::vector<char> mRetired;
 	};
 
 	template<>

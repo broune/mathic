@@ -64,8 +64,14 @@ namespace mathic {
 	  Node& operator++() {*this = next(); return *this;}
 
 	  bool isRoot() const {return *this == Node();}
-	  bool isLeft() const {return fi ? !(_index & S) : !(_index & 1);}
-	  bool isRight() const {return fi ? _index & S : _index & 1;}
+
+      // Returns a size_t instead of a bool so that the compiler does not
+      // have to convert to bool (this silences a MSVC performance warning).
+	  size_t isLeft() const {return fi ? !(_index & S) : !(_index & 1);}
+
+      // Returns a size_t instead of a bool so that the compiler does not
+      // have to convert to bool (this silences a MSVC performance warning).
+      size_t isRight() const {return fi ? _index & S : _index & 1;}
 
 	  bool operator<(Node node) const {return _index < node._index;}
 	  bool operator<=(Node node) const {return _index <= node._index;}

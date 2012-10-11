@@ -10,7 +10,7 @@ libmathic_@MATHIC_API_VERSION@_la_CPPFLAGS = $(DEPS_CFLAGS)
 lib_LTLIBRARIES = libmathic-@MATHIC_API_VERSION@.la
 
 # set the C++ compiler to include src/
-AM_CXXFLAGS=-I$(top_srcdir)/src/
+AM_CXXFLAGS=-I$(top_srcdir)/src/ -std=gnu++0x
 
 # set the linker flags to build libmathic
 #libmathic_@MATHIC_API_VERSION@_la_LDFLAGS =
@@ -23,12 +23,9 @@ libmathic_@MATHIC_API_VERSION@_la_SOURCES = src/mathic/Timer.cpp	\
   src/mathic/ColumnPrinter.cpp src/mathic/DivMask.cpp				\
   src/mathic/Action.cpp src/mathic/BoolParameter.cpp				\
   src/mathic/CliParameter.cpp src/mathic/CliParser.cpp				\
-  src/mathic/ElementDeleter.cpp src/mathic/NameFactory.cpp			\
   src/mathic/error.cpp src/mathic/HelpAction.cpp					\
   src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp	\
-  src/mathic/display.cpp src/mathic/BitTriangle.cpp					\
-  src/mathic/PairQueue.cpp \
-  src/mathic/HashTable.cpp
+  src/mathic/display.cpp src/mathic/BitTriangle.cpp
 
 # The headers that libmathic installs.
 # Normally, automake strips the path from the files when installing them,
@@ -93,7 +90,7 @@ unittest_CPPFLAGS = $(DEPS_CFLAGS)
 unittest_CXXFLAGS=\
   -I$(top_srcdir)/libs/gtest/include\
   -I$(top_srcdir)/libs/gtest/\
-  -I$(top_srcdir)/src/
+  -I$(top_srcdir)/src/ -std=gnu++0x
 unittest_LDADD = $(DEPS_LIBS)
 unittest_LDFLAGS= $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 
