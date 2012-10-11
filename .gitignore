@@ -33,7 +33,6 @@ configure
 *.sdf
 *.opensdf
 *.vcxproj.user
-intermediate/
 output/
 
 # Configure build targets

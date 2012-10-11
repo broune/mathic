@@ -2,9 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathic-lib", "mathic-lib\mathic-lib.vcxproj", "{BEBD36F1-A124-4C01-8E67-3208D4472661}"
-	ProjectSection(ProjectDependencies) = postProject
-		{534C44F8-BA0A-4AF0-95F1-260CA8EF3551} = {534C44F8-BA0A-4AF0-95F1-260CA8EF3551}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathic-test", "mathic-test\mathic-test.vcxproj", "{9B09A868-B169-43E8-AFF9-D2F12657ABCF}"
 	ProjectSection(ProjectDependencies) = postProject

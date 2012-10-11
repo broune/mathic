@@ -198,42 +198,42 @@
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
     <TargetName>mathic</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
     <TargetName>mathic</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WarningAsError|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
     <TargetName>mathic</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='WarningAsError|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
     <TargetName>mathic</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-NoAssert|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
     <TargetName>mathic</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-NoAssert|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
     <TargetName>mathic</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -241,28 +241,28 @@
     <TargetName>mathic</TargetName>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>mathic</TargetName>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Assert|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>mathic</TargetName>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Assert|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>mathic</TargetName>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)\intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)\output\$(Platform)\$(Configuration)\intermediate\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
