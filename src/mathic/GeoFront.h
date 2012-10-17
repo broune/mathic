@@ -38,7 +38,7 @@ namespace mathic {
 	/** A reference is kept to entryCountRef so that it can be updated
 		in the event of a deduplication. */
   GeoFront(const C& conf, size_t& entryCountRef):
-	_cachedMaxBucket(0), _entryCountRef(entryCountRef), _conf(conf) {
+	_cachedMaxBucket(0), _entryCountRef(&entryCountRef), _conf(conf) {
 	  MATHIC_ASSERT(!C::trackFront);
 	}
 
@@ -50,7 +50,7 @@ namespace mathic {
 	void bucketsInvalidated(Bucket* oldBegin, Bucket* newBegin) {
 	  _cachedMaxBucket = 0;
 	}
-	bool empty() const {return _entryCountRef == 0;}
+	bool empty() const {return *_entryCountRef == 0;}
 
 	void insert(Bucket* bucket) {_cachedMaxBucket = 0;}
 	void remove(Bucket* bucket) {_cachedMaxBucket = 0;}
@@ -73,7 +73,7 @@ namespace mathic {
 	const Bucket* computeMax(Bucket* bucketBegin, Bucket* bucketEnd) const;
 
 	mutable const Bucket* _cachedMaxBucket;
-	mutable size_t& _entryCountRef;
+	size_t* _entryCountRef;
 	const C& _conf;
   };
 
@@ -113,7 +113,7 @@ namespace mathic {
 		mb->setEntry(mb->end() - 1,
 					 _conf.deduplicate(mb->back(), it->back()));
 		const_cast<B*>(it)->pop_back();
-		--_entryCountRef;
+		--*_entryCountRef;
 		continue;
 	  }
 	  maxBucket = it;
@@ -177,7 +177,7 @@ namespace mathic {
 	Bucket** _bucketBegin;
 	Bucket** _bucketEnd;
     Bucket** _bucketCapacityEnd;
-	mutable size_t& _entryCountRef;
+	size_t* _entryCountRef;
 	const C& _conf;
   };
 
@@ -196,7 +196,7 @@ namespace mathic {
 	_bucketBegin(0),
 	_bucketEnd(0),
     _bucketCapacityEnd(0),
-	_entryCountRef(entryCountRef),
+	_entryCountRef(&entryCountRef),
 	_conf(conf) {
     MATHIC_ASSERT(C::trackFront);
   }
@@ -290,7 +290,7 @@ namespace mathic {
 		otherBucket.setEntry(otherBucket.end() - 1,
 							 _conf.deduplicate(bucket->back(), otherBucket.back()));
 		bucket->pop_back();
-		--_entryCountRef;
+		--*_entryCountRef;
 		if (bucket->empty()) {
 		  bucket->_frontPos = pos;
 		  remove(bucket);

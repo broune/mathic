@@ -3,6 +3,7 @@
 
 #include "stdinc.h"
 #include <vector>
+#include <memory>
 
 namespace mathic {
   // Object that stores a triangular 2-dimensional array of bits. For example:
