@@ -38,7 +38,7 @@ namespace mathic {
 
 	// Returns the bit in the given column and row. As this is a triangle it
 	// must be true that row < column.
-	bool bit(size_t column, size_t row) const {
+	MATHIC_INLINE bool bit(size_t column, size_t row) const {
 	  MATHIC_ASSERT(column < columnCount());
 	  MATHIC_ASSERT(row < column);
 	  return mColumns[column][row];
@@ -57,7 +57,7 @@ namespace mathic {
 
 	// Sets the bit in the given column and row. As this is a triangle
 	// it must be true that column >= row.
-	void setBit(size_t column, size_t row, bool value) {
+	MATHIC_INLINE void setBit(size_t column, size_t row, bool value) {
 	  MATHIC_ASSERT(column < columnCount());
 	  MATHIC_ASSERT(row < column);
 	  mColumns[column][row] = value;

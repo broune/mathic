@@ -304,9 +304,8 @@ namespace mathic {
 	Configuration _conf;
 	GeoFront<Configuration> _front;
 
-#ifdef MATHIC_DEBUG
+    /// Asserts internal invariants if asserts are turned on.
 	bool isValid() const;
-#endif
   };
 
   template<class C>
@@ -320,7 +319,7 @@ namespace mathic {
 	_front(_conf, _entryCount) {
 	MATHIC_ASSERT(_conf.geoBase > 1);
 	addBucket(); // this avoids the special case of no buckets.
-    MATHIC_ASSERT(_front.debugIsValid(_bucketBegin, _bucketEnd));
+    MATHIC_ASSERT_NO_ASSUME(_front.debugIsValid(_bucketBegin, _bucketEnd));
   }
 
   template<class C>
@@ -790,9 +789,11 @@ namespace mathic {
       _front.getMemoryUse();
   }
 
-#ifdef MATHIC_DEBUG
   template<class C>
   bool Geobucket<C>::isValid() const {
+#ifndef MATHIC_DEBUG
+    return true;
+#else
 	MATHIC_ASSERT(_conf.geoBase >= 2);
 	MATHIC_ASSERT(!_buckets.empty());
 	MATHIC_ASSERT(_bucketBegin == &_buckets.front());
@@ -811,8 +812,8 @@ namespace mathic {
 	}
 	MATHIC_ASSERT(entryCount == _entryCount);
 	return _front.debugIsValid(_bucketBegin, _bucketEnd);
-  }
 #endif
+  }
 };
 
 #endif

@@ -224,9 +224,8 @@ namespace mathic {
 
     void print(std::ostream& out) const;
 
-#ifdef MATHIC_DEBUG
+    /// Asserts internal invariants if asserts are turned on.
     bool debugIsValid() const;
-#endif
 
   private:
     BinaryKDTree(const BinaryKDTree<C>&); // unavailable
@@ -619,9 +618,11 @@ next:
     }
   }
 
-#ifdef MATHIC_DEBUG
   template<class C>
   bool BinaryKDTree<C>::debugIsValid() const {
+#ifndef MATHIC_DEBUG
+    return true;
+#else
     MATHIC_ASSERT(_tmp.empty());
     MATHIC_ASSERT(!_conf.getDoAutomaticRebuilds() || _conf.getRebuildRatio() > 0);
 
@@ -694,8 +695,8 @@ next:
       }
     }
     return true;
-  }
 #endif
+  }
 
   template<class C>
   BinaryKDTree<C>::KDTreeLeaf::KDTreeLeaf(memt::Arena& arena, const C& conf):

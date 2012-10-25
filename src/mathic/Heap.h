@@ -68,9 +68,8 @@ namespace mathic {
 	Node moveHoleDown(Node hole);
 	void moveValueUp(Node pos, Entry value);
 
-#ifdef MATHIC_DEBUG
+    /// Asserts internal invariants if asserts are turned on.
 	bool isValid() const;
-#endif
 
 	Tree _tree;
 	Configuration _conf;
@@ -186,16 +185,18 @@ namespace mathic {
 	MATHIC_SLOW_ASSERT(isValid());
   }
 
-#ifdef MATHIC_DEBUG
   template<class C>
-	bool Heap<C>::isValid() const {
+  bool Heap<C>::isValid() const {
+#ifndef MATHIC_DEBUG
+    return true;
+#else
 	MATHIC_ASSERT(_tree.isValid());
 	for (Node i = Node().next(); i <= _tree.lastLeaf(); ++i) {
 	  MATHIC_ASSERT(!_conf.cmpLessThan(_conf.compare(_tree[i.parent()], _tree[i])));
 	}
 	return true;
-  }
 #endif
+  }
 }
 
 #endif

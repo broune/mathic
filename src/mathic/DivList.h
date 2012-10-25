@@ -435,7 +435,7 @@ namespace mathic {
 #endif
     const size_t removedCount =
       DivListHelper::removeMultiples(_conf, _list, extMonomial, out);
-    MATHIC_ASSERT(size() + removedCount == origSize);
+    MATHIC_ASSERT_NO_ASSUME(size() + removedCount == origSize);
     reportChanges(removedCount);
     return removedCount > 0;
   }

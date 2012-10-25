@@ -70,9 +70,8 @@ namespace mathic {
 
 	void reallocate();
 
-#ifdef MATHIC_DEBUG
+    /// Asserts internal invariants if asserts are turned on.
 	bool isValid() const;
-#endif
 
 	Tree _tree;
 	std::vector<Player> _players;
@@ -236,9 +235,11 @@ namespace mathic {
 	MATHIC_ASSERT(isValid());
   }
 
-#ifdef MATHIC_DEBUG
   template<class C>
-	bool TourTree<C>::isValid() const {
+  bool TourTree<C>::isValid() const {
+#ifndef MATHIC_DEBUG
+    return true;
+#else
 	MATHIC_ASSERT
 	  ((_tree.empty() && _players.empty()) || // just constructed
 	   (_tree.capacity() + 1 <= 2 * _players.capacity()));
@@ -267,8 +268,8 @@ namespace mathic {
 	  }
 	}
 	return true;
-  }
 #endif
+  }
 }
 
 #endif

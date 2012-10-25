@@ -86,9 +86,8 @@ namespace mathic {
         memt::Arena& arena,
         const C& conf);
 
-#ifdef MATHIC_DEBUG
+      /// Asserts internal invariants if asserts are turned on.
       bool debugIsValid() const;
-#endif
 
     private:
       Node(const Node&); // unavailable
@@ -149,9 +148,7 @@ namespace mathic {
 
     C& getConfiguration() {return _conf;}
 
-#ifdef MATHIC_DEBUG
     bool debugIsValid() const;
-#endif
 
   private:
     PackedKDTree(const PackedKDTree<C>&); // unavailable
@@ -576,9 +573,11 @@ next:
     MATHIC_ASSERT(_tmp.empty());
   }
 
-#ifdef MATHIC_DEBUG
   template<class C>
   bool PackedKDTree<C>::debugIsValid() const {
+#ifndef MATHIC_DEBUG
+    return true;
+#else
     //print(std::cerr); std::cerr << std::flush;
     MATHIC_ASSERT(_tmp.empty());
     MATHIC_ASSERT(!_conf.getDoAutomaticRebuilds() || _conf.getRebuildRatio() > 0);
@@ -650,8 +649,8 @@ next:
       }
     }
     return true;
-  }
 #endif
+  }
 
   template<class C>
   class PackedKDTree<C>::Node::SplitEqualOrLess {
@@ -735,9 +734,11 @@ next:
     return copied;
   }
 
-#ifdef MATHIC_DEBUG
   template<class C>
   bool PackedKDTree<C>::Node::debugIsValid() const {
+#ifndef MATHIC_DEBUG
+    return true;
+#else
     MATHIC_ASSERT(entries().debugIsValid());
     MATHIC_ASSERT(childBegin() <= childEnd());
     if (C::UseTreeDivMask) {
@@ -753,8 +754,8 @@ next:
       }
     }
     return true;
-  }
 #endif
+  }
 }
 
 #endif

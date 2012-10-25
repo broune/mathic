@@ -95,9 +95,8 @@ namespace mathic {
 
     size_t getMemoryUse() const;
 
-#ifdef MATHIC_DEBUG
+    /// Asserts internal invariants if asserts are turned on.
 	bool isValid() const;
-#endif
 
   private:
 	ComTree& operator=(const ComTree& tree) const; // not available
@@ -226,12 +225,12 @@ namespace mathic {
   }
 
   template<class E, bool FI>
-	typename ComTree<E, FI>::Node ComTree<E, FI>::Node::prev() const {
+  typename ComTree<E, FI>::Node ComTree<E, FI>::Node::prev() const {
 	return fi ? Node(_index - S) : Node(_index - 1);
   }
 
   template<class E, bool FI>
-	void ComTree<E, FI>::print(std::ostream& out) const {
+  void ComTree<E, FI>::print(std::ostream& out) const {
 	Node last = lastLeaf();
 	for (Node i; i <= last; i = i.next()) {
 	  if ((i._index & (i._index - 1)) == 0) // if i._index is a power of 2
@@ -241,9 +240,11 @@ namespace mathic {
 	out << "}\n";
   }
 
-#ifdef MATHIC_DEBUG
   template<class E, bool FI>
-	bool ComTree<E, FI>::isValid() const {
+  bool ComTree<E, FI>::isValid() const {
+#ifndef MATHIC_DEBUG
+    return true;
+#else
 	// sizeof(Entry) must be a power of two if FastIndex is true.
 	MATHIC_ASSERT(!FI || (sizeof(E) & (sizeof(E) - 1)) == 0);
 	if (capacity() == 0) {
@@ -256,8 +257,8 @@ namespace mathic {
 	  MATHIC_ASSERT(_lastLeaf <= _capacityEnd);
 	}
 	return true;
-  }
 #endif
+  }
 
   template<class E, bool FI>
 	bool ComTree<E, FI>::hasFreeCapacity(size_t extraCapacity) const {
