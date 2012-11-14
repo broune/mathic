@@ -22,6 +22,8 @@ namespace mathic {
     typedef EE value_type;
     typedef DivMask::Calculator<C> DivMaskCalculator;
 
+    using DivMask::HasDivMask<C::UseTreeDivMask>::updateToLowerBound;
+
     KDEntryArray(memt::Arena& arena, const C& conf);
 
     template<class Iter>
