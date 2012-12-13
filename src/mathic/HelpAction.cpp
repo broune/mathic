@@ -29,7 +29,6 @@ namespace mathic {
     return "Return information about the command line interface.";
   }
 
-
   void HelpAction::directOptions(
     std::vector<std::string> tokens,
     CliParser& parser
@@ -109,5 +108,9 @@ namespace mathic {
 
   const char* HelpAction::staticName() {
     return "help";
+  }
+
+  const std::string& HelpAction::topic() const {
+    return _topic;
   }
 }

@@ -23,6 +23,9 @@ namespace mathic {
 
     static const char* staticName();
 
+  protected:
+    const std::string& topic() const;
+
   private:
     void displayActionHelp(Action& action);
 
