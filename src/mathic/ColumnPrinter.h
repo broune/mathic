@@ -24,11 +24,22 @@ namespace mathic {
 
 	void print(std::ostream& out) const;
 
-    /** returns 123456789 as "123,456,789". */
+    /// Returns "123,456,789" for parameter value 123456789.
     static std::string commafy(unsigned long long l);
 
-    /** returns (3,4) as "75.0%". */
+    /// Returns "123.4G" for parameter value 123456789. So the SI prefix is a
+    /// suffix of the returned string, yet it is still called an SI *prefix*
+    /// because these are usually used as prefixes to units such as in Km.
+    static std::string withSIPrefix(unsigned long long l);
+
+    /** returns (3,100) as "3.0%". */
     static std::string percent(
+      unsigned long long numerator,
+      unsigned long long denominator);
+
+    /** returns (3,100) as "  3.0%". The string always has the same length for
+      ratios equal to or less than 999.9%. */
+    static std::string percentFixed(
       unsigned long long numerator,
       unsigned long long denominator);
 

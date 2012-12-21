@@ -120,7 +120,7 @@ namespace mathic {
 	}
   }
 
-  std::string ColumnPrinter::commafy(unsigned long long l) {
+  std::string ColumnPrinter::commafy(const unsigned long long l) {
     std::stringstream out;
     out << l;
     std::string str;
@@ -133,38 +133,75 @@ namespace mathic {
   }
 
   std::string ColumnPrinter::percent(
-      unsigned long long numerator,
-      unsigned long long denominator) {
-    return percent(static_cast<double>(numerator) / denominator);
+    const unsigned long long numerator,
+    const unsigned long long denominator
+  ) {
+    return ratio(numerator * 100, denominator) + '%';
   }
 
-  std::string ColumnPrinter::percent(double ratio) {
+  std::string ColumnPrinter::percentFixed(
+    const unsigned long long numerator,
+    const unsigned long long denominator
+  ) {
+    auto str = percent(numerator, denominator);
+    const size_t maxSize = 6;
+    MATHIC_ASSERT(maxSize == std::string("100.0%").size());
+    const auto size = str.size();
+    if (size > maxSize)
+      return std::move(str);
+    return std::string(maxSize - str.size(), ' ') + std::move(str);
+  }
+
+  std::string ColumnPrinter::percent(const double ratio) {
     return oneDecimal(ratio * 100) + '%';
   }
 
   std::string ColumnPrinter::ratio(
-    unsigned long long numerator,
-    unsigned long long denominator) {
+    const unsigned long long numerator,
+    const unsigned long long denominator
+  ) {
+    if (denominator == 0)
+      return std::string(numerator == 0 ? "0/0" : "?/0");
     return oneDecimal(static_cast<double>(numerator) / denominator);
   }
 
-  std::string ColumnPrinter::oneDecimal(double d) {
+  std::string ColumnPrinter::oneDecimal(const double d) {
     std::ostringstream out;
     unsigned long long l = static_cast<unsigned long long>(d * 10 + 0.5);
     out << l / 10 << '.' << l % 10;
 	return out.str();
   }
 
-  std::string ColumnPrinter::bytesInUnit(unsigned long long bytes) {
+  std::string ColumnPrinter::withSIPrefix(unsigned long long l) {
 	std::ostringstream out;
-	if (bytes < 1024) {
-	  out << bytes << 'b';
-    } else {
-	  const char* units[] = {"kb", "mb", "gb", "tb"};
+	if (l < 1000)
+      out << l;
+    else {
+	  const char* const units[] = {"k", "M", "G", "T"};
+	  const size_t unitCount = sizeof(units) / sizeof(*units);
+	  double amount = static_cast<double>(l) / 1000.0;
+	  size_t i = 0;
+      // the stop condition is at 999.5 because that value will get
+      // rounded to 1000.0.
+	  for (i = 0; i < unitCount && amount >= 999.95; ++i)
+        amount /= 1000.0;
+	  out << oneDecimal(amount) << units[i];
+    }
+    return out.str();
+  }
+
+  std::string ColumnPrinter::bytesInUnit(const unsigned long long bytes) {
+	std::ostringstream out;
+	if (bytes < 1024)
+	  out << bytes << 'B';
+    else {
+	  const char* const units[] = {"kB", "MB", "GB", "TB"};
 	  const size_t unitCount = sizeof(units) / sizeof(*units);
 	  double amount = static_cast<double>(bytes) / 1024.0;
 	  size_t i = 0;
-	  for (i = 0; i < unitCount && amount >= 1024; ++i)
+      // the stop condition is 1023.95 because that value will get
+      // rounded to 1024.0.
+	  for (i = 0; i < unitCount && amount >= 1023.95; ++i)
         amount /= 1024.0;
 	  out << oneDecimal(amount) << units[i];
     }
@@ -172,7 +209,10 @@ namespace mathic {
   }
 
 
-  std::ostream& operator<<(std::ostream& out, const ColumnPrinter& printer) {
+  std::ostream& operator<<(
+    std::ostream& out,
+    const ColumnPrinter& printer
+  ) {
 	printer.print(out);
 	return out;
   }
