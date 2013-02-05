@@ -15,12 +15,21 @@ namespace mathic {
 	~ColumnPrinter();
 
 	void setPrefix(const std::string& prefix);
-	void addColumn(bool flushLeft = true,
-				   const std::string& prefix = "  ",
-				   const std::string& suffix = "");
+	std::ostream& addColumn(
+      bool flushLeft = true,
+	  const std::string& prefix = "  ",
+	  const std::string& suffix = ""
+    );
 	size_t getColumnCount() const;
 
 	std::ostream& operator[](size_t col);
+
+    /// Inserts a newline after padding the current line with repeatThis 
+    /// chars until it fills the column width.
+    void repeatToEndOfLine(const char repeatThis, size_t col);
+
+    /// Works on all columns.
+    void repeatToEndOfLine(const char repeatThis);
 
 	void print(std::ostream& out) const;
 
@@ -35,7 +44,9 @@ namespace mathic {
     /** returns (3,100) as "3.0%". */
     static std::string percent(
       unsigned long long numerator,
-      unsigned long long denominator);
+      unsigned long long denominator
+    );
+    static std::string percent(double numerator, double denominator);
 
     /** returns (3,100) as "  3.0%". The string always has the same length for
       ratios equal to or less than 999.9%. */
@@ -49,7 +60,9 @@ namespace mathic {
     /** Returns (7,4) as "1.8" */
     static std::string ratio(
       unsigned long long numerator,
-      unsigned long long denominator);
+      unsigned long long denominator
+    );
+    static std::string ratio(double numerator, double denominator);
 
 	/** Returns d as a string printed to 1 decimal place, rounding up at 0.5 */
     static std::string oneDecimal(double d);
@@ -63,6 +76,7 @@ namespace mathic {
 	  std::stringstream text;
 	  std::string suffix;
 	  bool flushLeft;
+      std::vector<std::pair<size_t, char> > repeatToEndOfLine;
 	};
 	std::vector<Col*> _cols;
 	std::string _prefix;

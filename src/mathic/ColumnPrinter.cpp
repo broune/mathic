@@ -4,14 +4,14 @@ namespace mathic {
   namespace {
 	size_t getLineWidth(const std::string& str, size_t pos) {
 	  size_t startPos = pos;
-	  while (pos < str.size() && str[pos] != '\n')
+	  while (pos < str.size() && str[pos] != '\n' && str[pos] != '\0')
 		++pos;
 	  return pos - startPos;
 	}
 
-	void printSpaces(std::ostream& out, size_t howMany) {
+	void printChars(std::ostream& out, size_t howMany, const char c) {
 	  while (howMany > 0) {
-		out << ' ';
+		out << c;
 		--howMany;
 	  }
 	}
@@ -35,7 +35,7 @@ namespace mathic {
 	_prefix = prefix;
   }
 
-  void ColumnPrinter::addColumn(bool flushLeft,
+  std::ostream& ColumnPrinter::addColumn(bool flushLeft,
 								const std::string& prefix,
 								const std::string& suffix) {
 	std::auto_ptr<Col> col(new Col());
@@ -45,6 +45,7 @@ namespace mathic {
 
 	_cols.push_back(0);
 	_cols.back() = col.release(); // push_back didn't throw, so safe to release
+    return _cols.back()->text;
   }
 
   size_t ColumnPrinter::getColumnCount() const {
@@ -56,11 +57,29 @@ namespace mathic {
 	return _cols[col]->text;
   }
 
+  void ColumnPrinter::repeatToEndOfLine(const char repeatThis, size_t col) {
+    MATHIC_ASSERT(col < getColumnCount());
+    (*this)[col] << '\0' << repeatThis;
+  }
+
+  void ColumnPrinter::repeatToEndOfLine(const char repeatThis) {
+    MATHIC_ASSERT(repeatThis != '\n');
+    for (size_t col = 0; col < getColumnCount(); ++col)
+      repeatToEndOfLine(repeatThis, col);
+  }
+
   void ColumnPrinter::print(std::ostream& out) const {
-	// Calculate the width of each column.
+    // stringstream::str() copies the string, so we need
+    // to extract all the strings and store them to avoid copying
+    // at every access.
+    std::vector<std::string> texts(getColumnCount());
+	for (size_t col = 0; col < getColumnCount(); ++col)
+      texts[col] = _cols[col]->text.str();
+    
+    // Calculate the width of each column.
 	std::vector<size_t> widths(getColumnCount());
 	for (size_t col = 0; col < getColumnCount(); ++col) {
-	  const std::string& text = _cols[col]->text.str();
+      const auto& text = texts[col];
 	  size_t maxWidth = 0;
 
 	  size_t pos = 0;
@@ -72,7 +91,14 @@ namespace mathic {
 		// We can't just increment pos unconditionally by width + 1, as
 		// that could result in an overflow.
 		pos += width;
-		if (text[pos] == '\n')
+        if (pos == text.size())
+          break;
+        if (text[pos] == '\0') {
+          ++pos;
+          if (pos == text.size())
+            break;
+          ++pos;
+        } else if (text[pos] == '\n')
 		  ++pos;
 	  }
 	  widths[col] = maxWidth;
@@ -83,7 +109,7 @@ namespace mathic {
 	while (true) {
 	  bool done = true;
 	  for (size_t col = 0; col < getColumnCount(); ++col) {
-		if (poses[col] < _cols[col]->text.str().size()) {
+		if (poses[col] < texts[col].size()) {
 		  done = false;
 		  break;
 		}
@@ -95,24 +121,41 @@ namespace mathic {
 	  for (size_t col = 0; col < getColumnCount(); ++col) {
 		out << _cols[col]->prefix;
 
-		const std::string& text = _cols[col]->text.str();
+		const std::string& text = texts[col];
 		size_t& pos = poses[col];
 		size_t width = getLineWidth(text, pos);
 
+        char padChar = ' ';
+        if (
+          pos + width < text.size() &&
+          text[pos + width] == '\0' &&
+          pos + width + 1 < text.size()
+        ) {
+          padChar = text[pos + width + 1];
+        }
+
 		if (!_cols[col]->flushLeft)
-		  printSpaces(out, widths[col] - width);
+		  printChars(out, widths[col] - width, padChar);
 
 		while (pos < text.size()) {
 		  if (text[pos] == '\n') {
 			++pos;
 			break;
 		  }
+          if (text[pos] == '\0') {
+            ++pos;
+            if (pos < text.size()) {
+              MATHIC_ASSERT(text[pos] == padChar);
+              ++pos;
+            }
+            break;
+          }
 		  out << text[pos];
 		  ++pos;
 		}
 
 		if (_cols[col]->flushLeft)
-		  printSpaces(out, widths[col] - width);
+		  printChars(out, widths[col] - width, padChar);
 
 		out << _cols[col]->suffix;
 	  }
@@ -123,10 +166,11 @@ namespace mathic {
   std::string ColumnPrinter::commafy(const unsigned long long l) {
     std::stringstream out;
     out << l;
+    const auto uncomma = out.str();
     std::string str;
-    for (size_t i = 0; i < out.str().size(); ++i) {
-      str += out.str()[i];
-      if (i != out.str().size() - 1 && ((out.str().size() - i) % 3) == 1)
+    for (size_t i = 0; i < uncomma.size(); ++i) {
+      str += uncomma[i];
+      if (i != uncomma.size() - 1 && ((uncomma.size() - i) % 3) == 1)
         str += ',';
     }
     return str;
@@ -135,6 +179,13 @@ namespace mathic {
   std::string ColumnPrinter::percent(
     const unsigned long long numerator,
     const unsigned long long denominator
+  ) {
+    return ratio(numerator * 100, denominator) + '%';
+  }
+
+  std::string ColumnPrinter::percent(
+    const double numerator,
+    const double denominator
   ) {
     return ratio(numerator * 100, denominator) + '%';
   }
@@ -162,6 +213,20 @@ namespace mathic {
   ) {
     if (denominator == 0)
       return std::string(numerator == 0 ? "0/0" : "?/0");
+    return oneDecimal(static_cast<double>(numerator) / denominator);
+  }
+
+  std::string ColumnPrinter::ratio(
+    const double numerator,
+    const double denominator
+  ) {
+    const auto epsilon = 0.000000001;
+    if (-epsilon < denominator && denominator < epsilon) {
+      if (-epsilon < numerator && numerator < epsilon)
+        return "0/0";
+      else
+        return "?/0";
+    }
     return oneDecimal(static_cast<double>(numerator) / denominator);
   }
 
