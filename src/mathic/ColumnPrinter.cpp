@@ -174,14 +174,14 @@ namespace mathic {
     const unsigned long long numerator,
     const unsigned long long denominator
   ) {
-    return ratio(numerator * 100, denominator) + '%';
+    return ratioInteger(numerator * 100, denominator) + '%';
   }
 
   std::string ColumnPrinter::percent(
     const double numerator,
     const double denominator
   ) {
-    return ratio(numerator * 100, denominator) + '%';
+    return ratioDouble(numerator * 100, denominator) + '%';
   }
 
   std::string ColumnPrinter::percentFixed(
@@ -201,7 +201,7 @@ namespace mathic {
     return oneDecimal(ratio * 100) + '%';
   }
 
-  std::string ColumnPrinter::ratio(
+  std::string ColumnPrinter::ratioInteger(
     const unsigned long long numerator,
     const unsigned long long denominator
   ) {
@@ -210,7 +210,7 @@ namespace mathic {
     return oneDecimal(static_cast<double>(numerator) / denominator);
   }
 
-  std::string ColumnPrinter::ratio(
+  std::string ColumnPrinter::ratioDouble(
     const double numerator,
     const double denominator
   ) {

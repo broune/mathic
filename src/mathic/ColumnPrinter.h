@@ -57,11 +57,11 @@ namespace mathic {
     static std::string percent(double ratio);
 
     /** Returns (7,4) as "1.8" */
-    static std::string ratio(
+    static std::string ratioInteger(
       unsigned long long numerator,
       unsigned long long denominator
     );
-    static std::string ratio(double numerator, double denominator);
+    static std::string ratioDouble(double numerator, double denominator);
 
 	/** Returns d as a string printed to 1 decimal place, rounding up at 0.5 */
     static std::string oneDecimal(double d);
