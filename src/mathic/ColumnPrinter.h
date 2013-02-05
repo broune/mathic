@@ -41,20 +41,20 @@ namespace mathic {
     static std::string withSIPrefix(unsigned long long l);
 
     /** returns (3,100) as "3.0%". */
-    static std::string percent(
+    static std::string percentInteger(
       unsigned long long numerator,
       unsigned long long denominator
     );
-    static std::string percent(double numerator, double denominator);
+    static std::string percentDouble(double numerator, double denominator);
 
     /** returns (3,100) as "  3.0%". The string always has the same length for
       ratios equal to or less than 999.9%. */
-    static std::string percentFixed(
+    static std::string percentIntegerFixed(
       unsigned long long numerator,
       unsigned long long denominator);
 
     /** returns 0.7565 as "75.7%". */
-    static std::string percent(double ratio);
+    static std::string percentDouble(double ratio);
 
     /** Returns (7,4) as "1.8" */
     static std::string ratioInteger(

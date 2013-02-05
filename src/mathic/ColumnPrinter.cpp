@@ -170,25 +170,25 @@ namespace mathic {
     return str;
   }
 
-  std::string ColumnPrinter::percent(
+  std::string ColumnPrinter::percentInteger(
     const unsigned long long numerator,
     const unsigned long long denominator
   ) {
     return ratioInteger(numerator * 100, denominator) + '%';
   }
 
-  std::string ColumnPrinter::percent(
+  std::string ColumnPrinter::percentDouble(
     const double numerator,
     const double denominator
   ) {
     return ratioDouble(numerator * 100, denominator) + '%';
   }
 
-  std::string ColumnPrinter::percentFixed(
+  std::string ColumnPrinter::percentIntegerFixed(
     const unsigned long long numerator,
     const unsigned long long denominator
   ) {
-    auto str = percent(numerator, denominator);
+    auto str = percentInteger(numerator, denominator);
     const size_t maxSize = 6;
     MATHIC_ASSERT(maxSize == std::string("100.0%").size());
     const auto size = str.size();
@@ -197,7 +197,7 @@ namespace mathic {
     return std::string(maxSize - str.size(), ' ') + std::move(str);
   }
 
-  std::string ColumnPrinter::percent(const double ratio) {
+  std::string ColumnPrinter::percentDouble(const double ratio) {
     return oneDecimal(ratio * 100) + '%';
   }
 
