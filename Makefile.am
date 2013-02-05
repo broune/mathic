@@ -45,7 +45,7 @@ mathicB_include_HEADERS = src/mathic/Action.h src/mathic/Geobucket.h	\
   src/mathic/NameFactory.h src/mathic/display.h							\
   src/mathic/PackedKDTree.h src/mathic/DivFinder.h src/mathic/stdinc.h	\
   src/mathic/DivList.h src/mathic/StlSet.h src/mathic/DivMask.h			\
-  src/mathic/StringParameter.h src/mathic/ElementDeleter.h				\
+  src/mathic/StringParameter.h				\
   src/mathic/Timer.h src/mathic/error.h src/mathic/TourTree.h			\
   src/mathic/BitTriangle.h \
   src/mathic/PairQueue.h \

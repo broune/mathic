@@ -12,7 +12,6 @@ namespace mathic {
   class ColumnPrinter {
   public:
 	ColumnPrinter(size_t columnCount = 0);
-	~ColumnPrinter();
 
 	void setPrefix(const std::string& prefix);
 	std::ostream& addColumn(
@@ -78,7 +77,7 @@ namespace mathic {
 	  bool flushLeft;
       std::vector<std::pair<size_t, char> > repeatToEndOfLine;
 	};
-	std::vector<Col*> _cols;
+	std::vector<std::unique_ptr<Col>> _cols;
 	std::string _prefix;
   };
 

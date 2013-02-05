@@ -26,9 +26,9 @@ namespace mathic {
     const std::string& helpPreMessage() const {return _helpPreMessage;}
     const std::string& helpPostMessage() const {return _helpPostMessage;}
 
-    std::auto_ptr<Action> parse(int argc, char** argv);
-    std::auto_ptr<Action> parse(const std::vector<std::string>& commandLine);
-    std::auto_ptr<Action> createActionWithPrefix(const std::string& prefix);
+    std::unique_ptr<Action> parse(int argc, char** argv);
+    std::unique_ptr<Action> parse(const std::vector<std::string>& commandLine);
+    std::unique_ptr<Action> createActionWithPrefix(const std::string& prefix);
 
   private:
     NameFactory<Action> _actions;

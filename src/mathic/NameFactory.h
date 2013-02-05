@@ -2,11 +2,11 @@
 #define MATHIC_NAME_FACTORY_GUARD
 
 #include "stdinc.h"
+#include "error.h"
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <memory>
-#include "error.h"
 
 namespace mathic {
   /** A NameFactory takes a name and then creates an instance of a class
@@ -23,17 +23,17 @@ namespace mathic {
      generated in general. Used for error messages. */
     NameFactory(const char* abstractName): _abstractName(abstractName) {}
 
-    typedef std::auto_ptr<AbstractProduct> (*FactoryFunction)();
+    typedef std::unique_ptr<AbstractProduct> (*FactoryFunction)();
     void registerProduct(const std::string& name, FactoryFunction function);
 
     /** Calls the function registered to the parameter name and returns
      the result. Returns null if name has not been registered. */
-    std::auto_ptr<AbstractProduct>
+    std::unique_ptr<AbstractProduct>
       createNullOnUnknown(const std::string& name) const;
 
     /** Calls the function registered to the parameter name and returns
      the result. Throws an exception if name has not been registered. */
-    std::auto_ptr<AbstractProduct> create(const std::string& name) const;
+    std::unique_ptr<AbstractProduct> create(const std::string& name) const;
 
     /** Inserts into names all registered names that have the indicated
      prefix in lexicographic increasing order. */
@@ -74,7 +74,7 @@ namespace mathic {
    creates the actual product that has name equal to the indicated
    prefix. Exceptions thrown are as for uniqueNamesWithPrefix(). */
   template<class AbstractProduct>
-  std::auto_ptr<AbstractProduct> createWithPrefix
+  std::unique_ptr<AbstractProduct> createWithPrefix
   (const NameFactory<AbstractProduct>& factory, const std::string& prefix);
 
   /** Returns the unique product name that has the indicated prefix, or
@@ -96,18 +96,18 @@ namespace mathic {
   // to being templates.
 
   template<class AbstractProduct>
-  std::auto_ptr<AbstractProduct> NameFactory<AbstractProduct>::
+  std::unique_ptr<AbstractProduct> NameFactory<AbstractProduct>::
   createNullOnUnknown(const std::string& name) const {
     for (const_iterator it = _pairs.begin(); it != _pairs.end(); ++it)
       if (it->first == name)
         return it->second();
-    return std::auto_ptr<AbstractProduct>();
+    return std::unique_ptr<AbstractProduct>();
   }
 
   template<class AbstractProduct>
-  std::auto_ptr<AbstractProduct> NameFactory<AbstractProduct>::
+  std::unique_ptr<AbstractProduct> NameFactory<AbstractProduct>::
   create(const std::string& name) const {
-    std::auto_ptr<AbstractProduct> product = createNullOnUnknown(name);
+    std::unique_ptr<AbstractProduct> product = createNullOnUnknown(name);
     if (product.get() == 0)
       throwError<UnknownNameException>(
         "Unknown " + abstractProductName() + " \"" + name + "\".");
@@ -153,15 +153,15 @@ namespace mathic {
     (NameFactory<AbstractProduct>& factory, const std::string& name) {
     // work-around for no local functions in old C++
     struct HoldsFunction {
-      static std::auto_ptr<AbstractProduct> createConcreteProduct() {
-        return std::auto_ptr<AbstractProduct>(new ConcreteProduct());
+      static std::unique_ptr<AbstractProduct> createConcreteProduct() {
+        return std::unique_ptr<AbstractProduct>(new ConcreteProduct());
       }
     };
     factory.registerProduct(name, HoldsFunction::createConcreteProduct);
   }
 
   template<class AbstractProduct>
-  std::auto_ptr<AbstractProduct> createWithPrefix
+  std::unique_ptr<AbstractProduct> createWithPrefix
   (const NameFactory<AbstractProduct>& factory, const std::string& prefix) {
     return factory.createNullOnUnknown(uniqueNameWithPrefix(factory, prefix));
   }

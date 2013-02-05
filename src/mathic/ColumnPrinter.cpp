@@ -25,12 +25,6 @@ namespace mathic {
 	}
   }
 
-  ColumnPrinter::~ColumnPrinter() {
-	for (std::vector<Col*>::iterator it = _cols.begin();
-		 it != _cols.end(); ++it)
-	  delete *it;
-  }
-
   void ColumnPrinter::setPrefix(const std::string& prefix) {
 	_prefix = prefix;
   }
@@ -38,13 +32,13 @@ namespace mathic {
   std::ostream& ColumnPrinter::addColumn(bool flushLeft,
 								const std::string& prefix,
 								const std::string& suffix) {
-	std::auto_ptr<Col> col(new Col());
+	std::unique_ptr<Col> col(new Col());
 	col->prefix = prefix;
 	col->suffix = suffix;
 	col->flushLeft = flushLeft;
 
-	_cols.push_back(0);
-	_cols.back() = col.release(); // push_back didn't throw, so safe to release
+	_cols.emplace_back(std::move(col));
+
     return _cols.back()->text;
   }
 

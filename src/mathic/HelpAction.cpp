@@ -97,7 +97,7 @@ namespace mathic {
     _parser->pushBackRegisteredActionNames(names);
     for (std::vector<std::string>::const_iterator it = names.begin();
          it != names.end(); ++it) {
-      std::auto_ptr<Action> action(_parser->createActionWithPrefix(*it));
+      std::unique_ptr<Action> action(_parser->createActionWithPrefix(*it));
       printer[0] << action->name() << '\n';
 	  printer[1] << action->shortDescription() << '\n';
     }

@@ -10,15 +10,11 @@ namespace mathic {
     typedef void* Dummy;
     typedef NameFactory<Dummy> ParamNames;
     ParamNames makeParamNames(std::vector<CliParameter*> params) {
-      struct HoldsFunction { // work around for no local functions in old C++
-        static std::auto_ptr<Dummy> dummyCreate() {
-          return std::auto_ptr<Dummy>(0);
-        }
-      };
-
       ParamNames names("option");
-      for (size_t i = 0; i < params.size(); ++i)
-        names.registerProduct(params[i]->name(), HoldsFunction::dummyCreate);
+      for (size_t i = 0; i < params.size(); ++i) {
+        const auto makeNull = [](){return std::unique_ptr<Dummy>();};
+        names.registerProduct(params[i]->name(), makeNull);
+      }
       return names;
     }
   }
@@ -32,22 +28,22 @@ namespace mathic {
 
   CliParser::CliParser(): _actions("action") {}
 
-  std::auto_ptr<Action> CliParser::createActionWithPrefix(
+  std::unique_ptr<Action> CliParser::createActionWithPrefix(
     const std::string& prefix
   ) {
     return createWithPrefix(_actions, prefix);
   }
 
-  std::auto_ptr<Action> CliParser::parse(int argc, char** argv) {
+  std::unique_ptr<Action> CliParser::parse(int argc, char** argv) {
     std::vector<std::string> commandLine(argv, argv + argc);
     return parse(commandLine);
   }
 
-  std::auto_ptr<Action> CliParser::parse
+  std::unique_ptr<Action> CliParser::parse
     (const std::vector<std::string>& commandLine) {
     if (commandLine.empty())
       throwError<UnknownNameException>("No action specified.");
-    std::auto_ptr<Action> action = createActionWithPrefix(commandLine[0]);
+    std::unique_ptr<Action> action = createActionWithPrefix(commandLine[0]);
 
     std::vector<CliParameter*> params;
     action->pushBackParameters(params);

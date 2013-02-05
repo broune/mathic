@@ -3,7 +3,6 @@
 // utilities
 #include "mathic/Timer.h"
 #include "mathic/ColumnPrinter.h"
-#include "mathic/ElementDeleter.h"
 #include "mathic/error.h"
 
 // other data structures
