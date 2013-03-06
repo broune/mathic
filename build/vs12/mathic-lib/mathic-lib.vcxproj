@@ -71,7 +71,6 @@
     <ClInclude Include="..\..\..\src\mathic\DivFinder.h" />
     <ClInclude Include="..\..\..\src\mathic\DivList.h" />
     <ClInclude Include="..\..\..\src\mathic\DivMask.h" />
-    <ClInclude Include="..\..\..\src\mathic\ElementDeleter.h" />
     <ClInclude Include="..\..\..\src\mathic\error.h" />
     <ClInclude Include="..\..\..\src\mathic\Geobucket.h" />
     <ClInclude Include="..\..\..\src\mathic\GeoFront.h" />

@@ -95,9 +95,6 @@
     <ClInclude Include="..\..\..\src\mathic\DivMask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\mathic\ElementDeleter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\mathic\error.h">
       <Filter>Header Files</Filter>
     </ClInclude>

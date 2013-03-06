@@ -363,6 +363,8 @@ namespace mathic {
 		return mConf.cmpLessThan(cr);
 	  }
 
+      static const bool fastIndex = false;
+
 	private:
 	  Configuration& mConf;
 	};
