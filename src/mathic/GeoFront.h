@@ -144,6 +144,7 @@ namespace mathic {
 	class GeoFront<C, Bucket, true> {
   public:
 	GeoFront(const C& conf, size_t& entryCountRef);
+    ~GeoFront() {delete[] _bucketBegin;}
 
 	Bucket** begin() {return _bucketBegin;}
 	Bucket*const* begin() const {return _bucketBegin;}

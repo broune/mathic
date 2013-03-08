@@ -18,11 +18,9 @@ namespace mathic {
 
   const char* HelpAction::description() const {
     return 
-    "Typing `frobby help' displays a list of the available actions.\n"
-    "Typing `frobby help ACTION' displays a detailed description of that "
-    "action.\n\n"
-    "As an example, typing `frobby help irrdecom' will yield detailed "
-    "information about the irrdecom action.";
+      "Giving the parameter 'help' displays a list of the available actions.\n"
+      "Giving the parameters 'help action' displays a detailed description of "
+      "that action.\n";
   }
 
   const char* HelpAction::shortDescription() const {
