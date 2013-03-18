@@ -8,7 +8,6 @@
 #include "../../src/BoolParameter.cpp"
 #include "../../src/CliParameter.cpp"
 #include "../../src/CliParser.cpp"
-#include "../../src/ElementDeleter.cpp"
 #include "../../src/NameFactory.cpp"
 #include "../../src/error.cpp"
 #include "../../src/HelpAction.cpp"

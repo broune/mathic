@@ -3,7 +3,6 @@
 // utilities
 #include "../../src/Timer.h"
 #include "../../src/ColumnPrinter.h"
-#include "../../src/ElementDeleter.h"
 #include "../../src/error.h"
 
 // divisor query data structures
