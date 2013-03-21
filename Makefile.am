@@ -31,10 +31,10 @@ libmathic_la_SOURCES = src/mathic/Timer.cpp	\
 # Normally, automake strips the path from the files when installing them,
 # so src/mathic/x.h gets installed as just x.h.
 mathicA_include_HEADERS = src/mathic.h
-mathicA_includedir = $(includedir)/mathic
+mathicA_includedir = $(includedir)
 # install remaining headers into subdirectory of the include dir
 mathicB_includedir = \
-  $(includedir)/mathic/mathic
+  $(includedir)/mathic
 mathicB_include_HEADERS = src/mathic/Action.h src/mathic/Geobucket.h	\
   src/mathic/BinaryKDTree.h src/mathic/GeoFront.h						\
   src/mathic/BoolParameter.h src/mathic/Heap.h							\

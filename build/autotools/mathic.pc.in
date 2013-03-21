@@ -9,4 +9,4 @@ URL: https://github.com/broune/mathic
 Requires: memtailor-1.0
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lmathic
-Cflags: -I${includedir}/mathic/
+Cflags: -I${includedir}/
