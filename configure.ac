@@ -2,7 +2,7 @@ dnl AC_INIT sets up autoconf and must be first macro.
 AC_INIT([mathic], [1.0]) # package, version, bug-report-email
 
 # Check that memtailor is installed and locate it
-PKG_CHECK_MODULES([MEMTAILOR], [memtailor-1.0])
+PKG_CHECK_MODULES([MEMTAILOR], [memtailor])
 
 dnl ----- The gtest dependency
 
@@ -119,16 +119,10 @@ dnl source and binary interface of the library and is not the same as the
 dnl version of the project.
 AC_SUBST([MATHIC_SO_VERSION], [0:0:0])
 
-dnl Set the version displayed in the pkg-config file. This is currently
-dnl the same as the version of the project but it is possible that
-dnl for example the project will gain a version like x.y.z but that
-dnl the pkg-config file is only named as foo-x.y.pc (no z).
-AC_SUBST([MATHIC_API_VERSION], [1.0])
-
 dnl Set up AC_OUTPUT to create each file by copying an input file
 dnl while substituting the output variable values.
 AC_CONFIG_FILES([Makefile
-  build/autotools/mathic-${MATHIC_API_VERSION}.pc:build/autotools/mathic.pc.in])
+  build/autotools/mathic.pc:build/autotools/mathic.pc.in])
 
 dnl Macro that is required to be at the end of any Autoconf script.
 dnl Creates config.status and launches it.

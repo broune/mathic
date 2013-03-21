@@ -8,5 +8,5 @@ Description: C++ library of symbolic algebra data structures for use in Groebner
 URL: https://github.com/broune/mathic
 Requires: memtailor-1.0
 Version: @PACKAGE_VERSION@
-Libs: -L${libdir} -lmathic-@MATHIC_API_VERSION@
-Cflags: -I${includedir}/mathic-@MATHIC_API_VERSION@/
+Libs: -L${libdir} -lmathic
+Cflags: -I${includedir}/mathic/
