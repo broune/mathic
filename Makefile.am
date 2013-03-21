@@ -57,7 +57,7 @@ pkgconfig_DATA = build/autotools/mathic-$(MATHIC_API_VERSION).pc
 # When making a distribution file, Automake knows to include all files
 # that are necessary to build the project. EXTRA_DIST specifies files
 # to include beyond those used in the build process.
-EXTRA_DIST = autogen.sh libs/gtest
+EXTRA_DIST = autogen.sh
 
 # tell automake what programs are there that are not built automatically
 EXTRA_PROGRAMS = pqsim divsim
@@ -89,10 +89,7 @@ TESTS=unittest
 check_PROGRAMS=$(TESTS)
 
 unittest_CPPFLAGS = $(DEPS_CFLAGS)
-unittest_CXXFLAGS=\
-  -I$(top_srcdir)/libs/gtest/include\
-  -I$(top_srcdir)/libs/gtest/\
-  -I$(top_srcdir)/src/ -std=gnu++0x
+unittest_CXXFLAGS = -I$(top_srcdir)/src/ -std=gnu++0x
 unittest_LDADD = $(DEPS_LIBS)
 unittest_LDFLAGS= $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 
