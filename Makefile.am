@@ -2,7 +2,7 @@
 # autoconf. We use -I to tell aclocal where we put the local macros.
 ACLOCAL_AMFLAGS = -I build/autotools/m4
 
-# Options passed to the C PreProcessor (CPP), NOT the C Plus Plus compiler.
+# Options passed to the C and C++ PreProcessor (CPP) and compiler
 AM_CPPFLAGS = -I${top_srcdir}/
 libmathic_la_CPPFLAGS = $(DEPS_CFLAGS)
 
@@ -11,9 +11,6 @@ lib_LTLIBRARIES = libmathic.la
 
 # set the C++ compiler to include src/
 AM_CXXFLAGS=-I$(top_srcdir)/src/ -std=gnu++0x
-
-# set the linker flags to build libmathic
-#libmathic_la_LDFLAGS =
 
 # libraries that are needed by this library
 libmathic_la_LIBADD= $(DEPS_LIBS)

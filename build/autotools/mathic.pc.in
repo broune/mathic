@@ -6,7 +6,7 @@ includedir=@includedir@
 Name: mathic
 Description: C++ library of symbolic algebra data structures for use in Groebner basis computation.
 URL: https://github.com/broune/mathic
-Requires: memtailor-1.0
+Requires: memtailor
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lmathic
 Cflags: -I${includedir}/
