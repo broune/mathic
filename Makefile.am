@@ -83,6 +83,8 @@ pqsim_LDADD = $(top_builddir)/libmathic-$(MATHIC_API_VERSION).la
 
 
 # set up tests to run on "make check"
+if with_gtest
+
 TESTS=unittest
 check_PROGRAMS=$(TESTS)
 
@@ -99,3 +101,11 @@ unittest_SOURCES=src/test/DivFinder.cpp src/test/gtestInclude.cpp	\
   src/test/testMain.cpp src/test/BitTriangle.cpp					\
   src/test/PairQueue.cpp \
   src/test/HashTable.cpp
+
+else
+
+check:
+	@echo
+	@echo "Configure did not locate gtest, so unittests cannot be run."
+
+endif
