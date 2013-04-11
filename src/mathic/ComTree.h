@@ -32,7 +32,10 @@ namespace mathic {
 	class Node;
 	ComTree(size_t initialCapacity = 0);
 	ComTree(const ComTree& tree, size_t minCapacity = 0);
-	~ComTree() {delete[](_array + 1);}
+	~ComTree() {
+      MATHIC_ASSERT(isValid());
+      delete[](_array + 1);
+    }
 
 	Entry& operator[](Node n);
 	const Entry& operator[](Node n) const;
@@ -102,6 +105,14 @@ namespace mathic {
 	ComTree& operator=(const ComTree& tree) const; // not available
 
 	Entry* _array;
+
+    /// Macaulay 2 uses Mathic and Macaulay 2 also uses the Boehm garbage
+    /// collector. Since _array points to a place before the array we
+    /// are using, that array will be garbage collected if we do not
+    /// keep around a second pointer that does point into the array.
+    /// That is the purpose of _arrayKeepAlive.
+    Entry* _arrayKeepAlive;
+
 	Node _lastLeaf;
 	Node _capacityEnd;
   };
@@ -123,31 +134,41 @@ namespace mathic {
   }
 
   template<class E, bool FI>
-	ComTree<E, FI>::ComTree(size_t initialCapacity):
-  _array(static_cast<E*>(0) - 1),
-	_lastLeaf(0),
-	_capacityEnd(Node(0).next(initialCapacity)) {
-	if (initialCapacity > 0)
-	  _array = new E[initialCapacity] - 1;
-	MATHIC_ASSERT(isValid());
+  ComTree<E, FI>::ComTree(size_t initialCapacity):
+    _array(static_cast<E*>(0) - 1),
+    _arrayKeepAlive(0),
+    _lastLeaf(0),
+    _capacityEnd(Node(0).next(initialCapacity))
+  {
+    if (initialCapacity > 0) {
+      _arrayKeepAlive = new E[initialCapacity];
+      _array = _arrayKeepAlive - 1;
+    }
+    MATHIC_ASSERT(isValid());
   }
 
   template<class E, bool FI>
-	ComTree<E, FI>::ComTree(const ComTree& tree, size_t minCapacity):
-  _array(static_cast<E*>(0) - 1),
-	_lastLeaf(tree._lastLeaf) {
-	if (tree.size() > minCapacity)
-	  minCapacity = tree.size();
-	_capacityEnd = Node(0).next(minCapacity);
-	if (minCapacity == 0)
-	  return;
-	_array = new E[minCapacity] - 1;
-	for (Node i; i <= tree.lastLeaf(); ++i)
-	  (*this)[i] = tree[i];
+  ComTree<E, FI>::ComTree(const ComTree& tree, size_t minCapacity):
+    _array(static_cast<E*>(0) - 1),
+    _arrayKeepAlive(0),
+	_lastLeaf(tree._lastLeaf)
+  {
+    if (tree.size() > minCapacity)
+      minCapacity = tree.size();
+    _capacityEnd = Node(0).next(minCapacity);
+    if (minCapacity != 0) {
+      _arrayKeepAlive = new E[minCapacity];
+      _array = _arrayKeepAlive - 1;
+      for (Node i; i <= tree.lastLeaf(); ++i)
+        (*this)[i] = tree[i];
+    }
+
+    MATHIC_ASSERT(isValid());
   }
 
   template<class E, bool FI>
   inline E& ComTree<E, FI>::operator[](Node n) {
+    MATHIC_ASSERT(_array == _arrayKeepAlive - 1);
 	if (!FI)
 	  return _array[n._index];
 	char* base = reinterpret_cast<char*>(_array);
@@ -170,23 +191,30 @@ namespace mathic {
   }
 
   template<class E, bool FI>
-	void ComTree<E, FI>::pushBackWithCapacity(const E& value) {
-	MATHIC_ASSERT(_lastLeaf != _capacityEnd);
-	_lastLeaf = _lastLeaf.next();
-	(*this)[lastLeaf()] = value;
+  void ComTree<E, FI>::pushBackWithCapacity(const E& value) {
+    MATHIC_ASSERT(_lastLeaf != _capacityEnd);
+    _lastLeaf = _lastLeaf.next();
+    (*this)[lastLeaf()] = value;
   }
 
   template<class E, bool FI>
-	void ComTree<E, FI>::popBack() {
-	MATHIC_ASSERT(_lastLeaf >= Node());
-	_lastLeaf = _lastLeaf.prev();
+  void ComTree<E, FI>::popBack() {
+    MATHIC_ASSERT(_lastLeaf >= Node());
+    _lastLeaf = _lastLeaf.prev();
   }
 
   template<class E, bool FI>
-	void ComTree<E, FI>::swap(ComTree& tree) {
+  void ComTree<E, FI>::swap(ComTree& tree) {
+    MATHIC_ASSERT(isValid());
+    MATHIC_ASSERT(tree.isValid());
+
 	std::swap(_array, tree._array);
+    std::swap(_arrayKeepAlive, tree._arrayKeepAlive);
 	std::swap(_lastLeaf, tree._lastLeaf);
 	std::swap(_capacityEnd, tree._capacityEnd);
+
+    MATHIC_ASSERT(isValid());
+    MATHIC_ASSERT(tree.isValid());
   }
 
   template<class E, bool FI>
@@ -245,6 +273,8 @@ namespace mathic {
 #ifndef MATHIC_DEBUG
     return true;
 #else
+    MATHIC_ASSERT(_array == _arrayKeepAlive - 1);
+
 	// sizeof(Entry) must be a power of two if FastIndex is true.
 	MATHIC_ASSERT(!FI || (sizeof(E) & (sizeof(E) - 1)) == 0);
 	if (capacity() == 0) {
@@ -267,11 +297,14 @@ namespace mathic {
   }
 
   template<class E, bool FI>
-	void ComTree<E, FI>::increaseCapacity() {
+  void ComTree<E, FI>::increaseCapacity() {
+    MATHIC_ASSERT(isValid());
 	ComTree<E, FI> newTree(capacity() == 0 ? 16 : capacity() * 2);
 	for (Node i; i <= lastLeaf(); i = i.next())
 	  newTree.pushBack((*this)[i]);
+    MATHIC_ASSERT(newTree.isValid());
 	std::swap(_array, newTree._array);
+    std::swap(_arrayKeepAlive, newTree._arrayKeepAlive);
 	std::swap(_capacityEnd, newTree._capacityEnd);
 	MATHIC_ASSERT(isValid());
   }
