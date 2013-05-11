@@ -28,14 +28,18 @@ namespace mathic {
   by adding padding to Entry, but this class does not do that for you.
   */
   template<class C>
-	class Heap {
+  class Heap {
   public:
-	typedef C Configuration;
-	typedef typename Configuration::Entry Entry;
-
+    typedef C Configuration;
+    typedef typename Configuration::Entry Entry;
+    
     Heap(const Configuration& configuration): _conf(configuration) {}
-	Configuration& getConfiguration() {return _conf;}
-	const Configuration& getConfiguration() const {return _conf;}
+    Heap(const Configuration&& configuration):
+      _conf(std::move(configuration)) {}
+    Heap(Heap&& heap): _tree(std::move(_tree)), _conf(std::move(heap._conf)) {}
+
+    Configuration& getConfiguration() {return _conf;}
+    const Configuration& getConfiguration() const {return _conf;}
 
     template<class T>
     void forAll(T& t) const {
@@ -45,34 +49,36 @@ namespace mathic {
           return;
     }
 
-	std::string getName() const;
-	void push(Entry entry);
+    std::string getName() const;
+    void push(Entry entry);
+
     template<class It>
-	void push(It begin, It end);
+    void push(It begin, It end);
+
     void clear();
-	Entry pop();
-	Entry top() const {return _tree[Node()];}
-	bool empty() const {return _tree.empty();}
-	size_t size() const {return _tree.size();}
+    Entry pop();
+    Entry top() const {return _tree[Node()];}
+    bool empty() const {return _tree.empty();}
+    size_t size() const {return _tree.size();}
 
-	void print(std::ostream& out) const;
+    void print(std::ostream& out) const;
 
-	void decreaseTop(Entry newEntry);
+    void decreaseTop(Entry newEntry);
 
     size_t getMemoryUse() const;
 
   private:
-	typedef ComTree<Entry, Configuration::fastIndex> Tree;
-	typedef typename Tree::Node Node;
+    typedef ComTree<Entry, Configuration::fastIndex> Tree;
+    typedef typename Tree::Node Node;
 
-	Node moveHoleDown(Node hole);
-	void moveValueUp(Node pos, Entry value);
+    Node moveHoleDown(Node hole);
+    void moveValueUp(Node pos, Entry value);
 
     /// Asserts internal invariants if asserts are turned on.
-	bool isValid() const;
+    bool isValid() const;
 
-	Tree _tree;
-	Configuration _conf;
+    Tree _tree;
+    Configuration _conf;
   };
 
   template<class C>
