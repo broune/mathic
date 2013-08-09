@@ -22,7 +22,7 @@ libmathic_la_SOURCES = src/mathic/Timer.cpp	\
   src/mathic/CliParameter.cpp src/mathic/CliParser.cpp				\
   src/mathic/error.cpp src/mathic/HelpAction.cpp					\
   src/mathic/IntegerParameter.cpp src/mathic/StringParameter.cpp	\
-  src/mathic/display.cpp src/mathic/BitTriangle.cpp
+  src/mathic/display.cpp src/mathic/BitTriangle.cpp src/mathic.cpp
 
 # The headers that libmathic installs.
 # Normally, automake strips the path from the files when installing them,

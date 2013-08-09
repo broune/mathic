@@ -29,3 +29,10 @@
 #include "mathic/IntegerParameter.h"
 #include "mathic/StringParameter.h"
 #include "mathic/display.h"
+
+extern "C" {
+  // Put a C function in the library so that it can be detected by the autoconf
+  // macro AC_CHECK_LIB. That macro can only check for libraries that contain
+  // at least one C function.
+  void libmathicIsPresent(void); // This function does nothing.
+}
