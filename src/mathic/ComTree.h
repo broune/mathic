@@ -105,7 +105,6 @@ namespace mathic {
     bool isValid() const;
 
   private:
-    ComTree(const ComTree&); // not available
     ComTree& operator=(const ComTree& tree) const; // not available
 
     Entry* _array;
