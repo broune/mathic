@@ -7,4 +7,4 @@
 
 // the .. goes back from the include/ directory of gtest so we can
 // enter the src directory.
-#include <../src/gtest-all.cc>
+#include "src/gtest-all.cc"

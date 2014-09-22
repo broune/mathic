@@ -114,6 +114,7 @@ TEST(PairQueue, Ordering) {
   // distinguish all pairs and that, according to the pairdata,
   //   (11,0) < (11,10) = (111,0) < (11,5)
   // so the order that pairs are extracted mix up columns 11 and 111.
+
   for (size_t col = 0; col < 112; ++col) {
 	Index const* begin = 0;
 	Index const* end = 0;
@@ -121,20 +122,24 @@ TEST(PairQueue, Ordering) {
 	  Index const rows[] = {0};
 	  begin = rows;
 	  end = rows + sizeof(rows) / sizeof(rows[0]);
+      pq.addColumnDescending(begin, end);
 	} else if (col == 11) {
 	  Index const rows[] = {0, 10, 5};
 	  begin = rows;
 	  end = rows + sizeof(rows) / sizeof(rows[0]);
+      pq.addColumnDescending(begin, end);
 	} else if (col == 13) {
 	  Index const rows[] = {12, 3, 7};
 	  begin = rows;
 	  end = rows + sizeof(rows) / sizeof(rows[0]);
+      pq.addColumnDescending(begin, end);
 	} else if (col == 111) {
 	  Index const rows[] = {0, 100};
 	  begin = rows;
 	  end = rows + sizeof(rows) / sizeof(rows[0]);
-	}
-	pq.addColumnDescending(begin, end);
+      pq.addColumnDescending(begin, end);
+	} else
+      pq.addColumnDescending(begin, end);
   }
   std::ostringstream out;
   std::string lastPd;

@@ -4,6 +4,8 @@ AC_INIT([mathic], [1.0]) # package, version, bug-report-email
 # Check that memtailor is installed and locate it
 PKG_CHECK_MODULES([MEMTAILOR], [memtailor])
 
+AM_PROG_AR
+
 dnl ----- The gtest dependency
 
 AC_ARG_WITH([gtest], AS_HELP_STRING(
@@ -24,7 +26,8 @@ AS_IF([test "x$GTEST_VERSION" == "x"], [GTEST_VERSION="1.6.0"])
 AS_IF([test "x$with_gtest" == "x"], [with_gtest="download"])
 
 AS_IF([test "x$with_gtest" == "xdownload"],
-  [with_gtest="yes"; AC_CHECK_FILE([$GTEST_PATH/gtest/src/gtest-all.cc], [], [
+  [with_gtest="yes"; AC_CHECK_FILE([$GTEST_PATH/src/gtest-all.cc], [], [
+    echo "downloading of gtest disabled" >&2; exit 1
     mkdir -p "$GTEST_PATH";
     (
       cd $GTEST_PATH;
@@ -35,7 +38,7 @@ AS_IF([test "x$with_gtest" == "xdownload"],
       rm -rf gtest/
       mv gtest-$GTEST_VERSION/ gtest/
     );
-    if test ! -e "$GTEST_PATH/gtest/src/gtest-all.cc"; then
+    if test ! -e "$GTEST_PATH/src/gtest-all.cc"; then
       AC_MSG_WARN([Failed to download or extract gtest.]);
       with_gtest="no";
     else
@@ -43,7 +46,7 @@ AS_IF([test "x$with_gtest" == "xdownload"],
     fi
   ])],
   [test "x$with_gtest" == "xyes"], [
-    AC_CHECK_FILE([$GTEST_PATH/gtest/src/gtest-all.cc], [], [
+    AC_CHECK_FILE([$GTEST_PATH/src/gtest-all.cc], [], [
       AC_MSG_ERROR([could not find gtest source at path $GTEST_PATH.])
     ])
   ],
@@ -51,7 +54,7 @@ AS_IF([test "x$with_gtest" == "xdownload"],
   [AC_MSG_ERROR([invalid value $with_gtest for with_gtest.])]
 )
 AS_IF([test "x$with_gtest" == "xyes"],
-  [GTEST_CFLAGS="-I`cd $GTEST_PATH/gtest/include; echo $PWD` -I`cd $GTEST_PATH/gtest/; echo $PWD`"]);
+  [GTEST_CFLAGS="-I$GTEST_PATH/include -I$GTEST_PATH"]);
 AM_CONDITIONAL(with_gtest, test "x$with_gtest" == "xyes")
 
 DEPS_CFLAGS="$MEMTAILOR_CFLAGS $GTEST_CFLAGS"

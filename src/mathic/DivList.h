@@ -159,6 +159,34 @@ namespace mathic {
   };
 
   template<class C>
+    class DivList<C>::iterator :
+  public std::iterator<std::bidirectional_iterator_tag, Entry> {
+  public:
+    friend class DivList<C>;
+    explicit iterator(ListIter it): _it(it) {}
+    operator const_iterator() const {return const_iterator(_it);}
+
+    bool operator==(iterator it) {return _it == it._it;}
+    bool operator!=(iterator it) {return _it != it._it;}
+    bool operator==(const_iterator it); // {return it == const_iterator(*this);}
+    bool operator!=(const_iterator it); // {return it != const_iterator(*this);}
+
+    iterator& operator++() {++_it; return *this;}
+    iterator operator++(int) {iterator tmp = *this; operator++(); return tmp;}
+    iterator& operator--() {--_it; return *this;}
+    iterator operator--(int) {iterator tmp = *this; operator--(); return tmp;}
+
+    Entry& operator*() const {return _it->get();}
+    Entry* operator->() const {return &_it->get();}
+
+  protected:
+    ListIter getInternal() {return _it;}
+
+  private:
+    ListIter _it;
+  };
+
+  template<class C>
     class DivList<C>::const_iterator :
   public std::iterator<std::bidirectional_iterator_tag, const Entry> {
   public:
@@ -193,32 +221,9 @@ namespace mathic {
   };
 
   template<class C>
-    class DivList<C>::iterator :
-  public std::iterator<std::bidirectional_iterator_tag, Entry> {
-  public:
-    friend class DivList<C>;
-    explicit iterator(ListIter it): _it(it) {}
-    operator const_iterator() const {return const_iterator(_it);}
-
-    bool operator==(iterator it) {return _it == it._it;}
-    bool operator!=(iterator it) {return _it != it._it;}
-    bool operator==(const_iterator it) {return it == const_iterator(*this);}
-    bool operator!=(const_iterator it) {return it != const_iterator(*this);}
-
-    iterator& operator++() {++_it; return *this;}
-    iterator operator++(int) {iterator tmp = *this; operator++(); return tmp;}
-    iterator& operator--() {--_it; return *this;}
-    iterator operator--(int) {iterator tmp = *this; operator--(); return tmp;}
-
-    Entry& operator*() const {return _it->get();}
-    Entry* operator->() const {return &_it->get();}
-
-  protected:
-    ListIter getInternal() {return _it;}
-
-  private:
-    ListIter _it;
-  };
+    bool DivList<C>::iterator::operator==(const_iterator it) {return it == const_iterator(*this);}
+  template<class C>
+    bool DivList<C>::iterator::operator!=(const_iterator it) {return it != const_iterator(*this);}
 
   namespace DivListHelper {
     template<class C, class E, class M, class MO>
