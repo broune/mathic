@@ -21,13 +21,12 @@ AC_ARG_WITH([gtest], AS_HELP_STRING(
 ))
 
 AC_MSG_CHECKING([for gtest])
-AS_IF([test "x$GTEST_PATH" == "x"], [GTEST_PATH="$srcdir/libs"])
-AS_IF([test "x$GTEST_VERSION" == "x"], [GTEST_VERSION="1.6.0"])
-AS_IF([test "x$with_gtest" == "x"], [with_gtest="download"])
+AS_IF([test "$GTEST_PATH" = ""], [GTEST_PATH="$srcdir/libs"])
+AS_IF([test "$GTEST_VERSION" = ""], [GTEST_VERSION="1.6.0"])
+AS_IF([test "$with_gtest" = ""], [with_gtest="download"])
 
-AS_IF([test "x$with_gtest" == "xdownload"],
+AS_IF([test "$with_gtest" = "download"],
   [with_gtest="yes"; AC_CHECK_FILE([$GTEST_PATH/src/gtest-all.cc], [], [
-    echo "downloading of gtest disabled" >&2; exit 1
     mkdir -p "$GTEST_PATH";
     (
       cd $GTEST_PATH;
@@ -45,17 +44,17 @@ AS_IF([test "x$with_gtest" == "xdownload"],
       with_gtest="yes";
     fi
   ])],
-  [test "x$with_gtest" == "xyes"], [
+  [test "$with_gtest" = "yes"], [
     AC_CHECK_FILE([$GTEST_PATH/src/gtest-all.cc], [], [
       AC_MSG_ERROR([could not find gtest source at path $GTEST_PATH.])
     ])
   ],
-  [test "x$with_gtest" == "xno"], [],
+  [test "$with_gtest" = "no"], [],
   [AC_MSG_ERROR([invalid value $with_gtest for with_gtest.])]
 )
-AS_IF([test "x$with_gtest" == "xyes"],
+AS_IF([test "$with_gtest" = "yes"],
   [CPPFLAGS="-I$GTEST_PATH/include -I$GTEST_PATH $CPPFLAGS"]);
-AM_CONDITIONAL(with_gtest, test "x$with_gtest" == "xyes")
+AM_CONDITIONAL(with_gtest, test "$with_gtest" = "yes")
 
 DEPS_CFLAGS="$MEMTAILOR_CFLAGS $GTEST_CFLAGS"
 DEPS_LIBS="$MEMTAILOR_LIBS $GTEST_LIBS"
