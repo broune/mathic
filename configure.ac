@@ -54,7 +54,7 @@ AS_IF([test "x$with_gtest" == "xdownload"],
   [AC_MSG_ERROR([invalid value $with_gtest for with_gtest.])]
 )
 AS_IF([test "x$with_gtest" == "xyes"],
-  [GTEST_CFLAGS="-I$GTEST_PATH/include -I$GTEST_PATH"]);
+  [CPPFLAGS="-I$GTEST_PATH/include -I$GTEST_PATH $CPPFLAGS"]);
 AM_CONDITIONAL(with_gtest, test "x$with_gtest" == "xyes")
 
 DEPS_CFLAGS="$MEMTAILOR_CFLAGS $GTEST_CFLAGS"
@@ -114,8 +114,7 @@ AC_PROG_INSTALL
 # Locate the C++ compiler.
 AC_PROG_CXX
 
-# Set up LibTool
-LT_INIT
+AC_PROG_RANLIB
 
 dnl Set the version for the library -- this concerns compatibility of the
 dnl source and binary interface of the library and is not the same as the
