@@ -27,6 +27,9 @@ Makefile.in
 Makefile
 configure
 .libs/
+/build/autotools/compile
+/build/autotools/mathic.pc
+/build/autotools/test-driver
 
 # Visual studio generated files
 *.suo
@@ -42,3 +45,8 @@ pro/
 rel/
 relass/
 
+# test output
+/test-suite.log
+/unittest
+/unittest.log
+/unittest.trs
