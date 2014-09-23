@@ -59,21 +59,21 @@ EXTRA_PROGRAMS = pqsim divsim
 # set up the divisor query simulation. Listing the headers in sources
 # ensure that those files are included in distributions.
 divsim_CPPFLAGS = $(DEPS_CFLAGS)
-divsim_SOURCES = src/divsim/divMain.cpp src/divsim/Simulation.cpp		\
-  src/divsim/DivListModel.h src/divsim/KDTreeModel.h					\
+divsim_SOURCES = src/divsim/divMain.cpp src/divsim/Simulation.cpp	\
+  src/divsim/DivListModel.h src/divsim/KDTreeModel.h			\
   src/divsim/Simulation.h src/divsim/divMain.h src/divsim/Monomial.h	\
   src/divsim/stdinc.h
-divsim_LDADD = $(top_builddir)/libmathic.a
+divsim_LDADD = $(top_builddir)/libmathic.a -lpthread
 
 # set up the priority queue simulation. Listing the headers in sources
 # ensure that those files are included in distributions.
 pqsim_CPPFLAGS = $(DEPS_CFLAGS)
-pqsim_SOURCES = src/pqsim/Item.cpp src/pqsim/Model.cpp				\
-  src/pqsim/pqMain.cpp src/pqsim/Simulator.cpp						\
+pqsim_SOURCES = src/pqsim/Item.cpp src/pqsim/Model.cpp			\
+  src/pqsim/pqMain.cpp src/pqsim/Simulator.cpp				\
   src/pqsim/GeobucketModel.h src/pqsim/Model.h src/pqsim/stdinc.h	\
   src/pqsim/HeapModel.h src/pqsim/pqMain.h src/pqsim/StlSetModel.h	\
   src/pqsim/Item.h src/pqsim/Simulator.h src/pqsim/TourTreeModel.h
-pqsim_LDADD = $(top_builddir)/libmathic.a
+pqsim_LDADD = $(top_builddir)/libmathic.a -lpthread
 
 
 # set up tests to run on "make check"
@@ -83,7 +83,7 @@ TESTS=unittest
 check_PROGRAMS=$(TESTS)
 
 unittest_CXXFLAGS = -I$(top_srcdir)/src/ -std=gnu++0x
-unittest_LDADD = $(top_builddir)/libmathic.a $(DEPS_LIBS)
+unittest_LDADD = $(top_builddir)/libmathic.a $(DEPS_LIBS) -lpthread
 unittest_CPPFLAGS = $(DEPS_CFLAGS)
 
 test_LIBS=
