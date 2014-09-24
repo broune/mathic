@@ -19,3 +19,12 @@ the exponent of variable number x in this term/monomial?".
 The paper "Practical Grobner Basis Computation" describes the data
 structures from a high level. It was presented at ISSAC 2012 and is
 available at http://arxiv.org/abs/1206.6940
+
+The following copyright and license notice applies to all of the files in
+mathic.
+
+Copyright 2012 2013 Bjarke Hammersholt Roune (http://www.broune.com) 
+
+Mathic is licensed for use under the terms of GNU Lesser General Public License
+version 2.0, and under any later version; the option is yours.  See the files
+lgpl-*.txt in this directory.
