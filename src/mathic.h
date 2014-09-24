@@ -35,4 +35,6 @@ extern "C" {
   // macro AC_CHECK_LIB. That macro can only check for libraries that contain
   // at least one C function.
   void libmathicIsPresent(void); // This function does nothing.
+  extern char MATHIC_VERSION_STRING[];
 }
+#define MATHIC_VERSION VERSION
