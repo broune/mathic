@@ -2,7 +2,7 @@ dnl AC_INIT sets up autoconf and must be first macro.
 AC_INIT([mathic], [1.0]) # package, version, bug-report-email
 
 # Check that memtailor is installed and locate it
-PKG_CHECK_MODULES([MEMTAILOR], [memtailor])
+# PKG_CHECK_MODULES([MEMTAILOR], [memtailor])
 
 AM_PROG_AR
 
