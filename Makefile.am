@@ -63,7 +63,7 @@ divsim_SOURCES = src/divsim/divMain.cpp src/divsim/Simulation.cpp	\
   src/divsim/DivListModel.h src/divsim/KDTreeModel.h			\
   src/divsim/Simulation.h src/divsim/divMain.h src/divsim/Monomial.h	\
   src/divsim/stdinc.h
-divsim_LDADD = $(top_builddir)/libmathic.a -lpthread
+divsim_LDADD = $(top_builddir)/libmathic.a -lmemtailor -lpthread
 
 # set up the priority queue simulation. Listing the headers in sources
 # ensure that those files are included in distributions.
@@ -73,7 +73,7 @@ pqsim_SOURCES = src/pqsim/Item.cpp src/pqsim/Model.cpp			\
   src/pqsim/GeobucketModel.h src/pqsim/Model.h src/pqsim/stdinc.h	\
   src/pqsim/HeapModel.h src/pqsim/pqMain.h src/pqsim/StlSetModel.h	\
   src/pqsim/Item.h src/pqsim/Simulator.h src/pqsim/TourTreeModel.h
-pqsim_LDADD = $(top_builddir)/libmathic.a -lpthread
+pqsim_LDADD = $(top_builddir)/libmathic.a -lmemtailor -lpthread
 
 
 # set up tests to run on "make check"
@@ -83,7 +83,7 @@ TESTS=unittest
 check_PROGRAMS=$(TESTS)
 
 unittest_CXXFLAGS = -I$(top_srcdir)/src/ -std=gnu++0x
-unittest_LDADD = $(top_builddir)/libmathic.a $(DEPS_LIBS) -lpthread
+unittest_LDADD = $(top_builddir)/libmathic.a $(DEPS_LIBS) -lmemtailor -lpthread
 unittest_CPPFLAGS = $(DEPS_CFLAGS)
 
 test_LIBS=
