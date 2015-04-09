@@ -1,6 +1,15 @@
 dnl AC_INIT sets up autoconf and must be first macro.
 AC_INIT([mathic], [1.0]) # package, version, bug-report-email
 
+# set up information about directories
+AC_CONFIG_MACRO_DIR([build/autotools/m4]) # directory of extra autoconf macroes
+AC_CONFIG_AUX_DIR([build/autotools]) # directory for auxiliary build tools (install-sh etc)
+
+# check that source directory is correct
+dnl  if autoconf is told the source code is in a directory that does not
+dnl  contain this file then it knows that the directory is wrong.
+AC_CONFIG_SRCDIR([src/mathic.h])
+
 # Check that memtailor is installed and locate it
 # PKG_CHECK_MODULES([MEMTAILOR], [memtailor])
 
@@ -60,15 +69,6 @@ DEPS_CFLAGS="$MEMTAILOR_CFLAGS $GTEST_CFLAGS"
 DEPS_LIBS="$MEMTAILOR_LIBS $GTEST_LIBS"
 AC_SUBST(DEPS_CFLAGS)
 AC_SUBST(DEPS_LIBS)
-
-# set up information about directories
-AC_CONFIG_MACRO_DIR([build/autotools/m4]) # directory of extra autoconf macroes
-AC_CONFIG_AUX_DIR([build/autotools]) # directory for auxiliary build tools (install-sh etc)
-
-# check that source directory is correct
-dnl  if autoconf is told the source code is in a directory that does not
-dnl  contain this file then it knows that the directory is wrong.
-AC_CONFIG_SRCDIR([src/mathic.h])
 
 # Enable optional maintainer mode (off by default)
 dnl AM_MAINTAINER_MODE turns off automatic reconstruction of the build
