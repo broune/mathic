@@ -171,6 +171,7 @@ namespace mathic {
 	Geobucket(const Geobucket&); // unavailable
 	Geobucket& operator=(const Geobucket&); // unavailable
 
+  public: // MES: clang complains when this is private (in GeoFront.h)
 	struct Bucket {
 	  Bucket(size_t capacity, Entry* buffer, Entry* otherBuffer);
 	  size_t size() const {return _size;}
