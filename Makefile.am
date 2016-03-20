@@ -4,16 +4,19 @@ ACLOCAL_AMFLAGS = -I build/autotools/m4
 
 # Options passed to the C and C++ PreProcessor (CPP) and compiler
 AM_CPPFLAGS = -I${top_srcdir}/
-libmathic_a_CPPFLAGS = $(DEPS_CFLAGS)
+libmathic_la_CPPFLAGS = $(DEPS_CFLAGS)
 
 # tell Libtool what the name of the library is.
-lib_LIBRARIES = libmathic.a
+lib_LTLIBRARIES = libmathic.la
 
 # set the C++ compiler to include src/
 AM_CXXFLAGS=-I$(top_srcdir)/src/ -std=gnu++0x
 
+# libraries that are needed by this library
+libmathic_la_LIBADD= $(DEPS_LIBS)
+
 # the sources that are built to make libmathic.
-libmathic_a_SOURCES = src/mathic/Timer.cpp	\
+libmathic_la_SOURCES = src/mathic/Timer.cpp	\
   src/mathic/ColumnPrinter.cpp src/mathic/DivMask.cpp				\
   src/mathic/Action.cpp src/mathic/BoolParameter.cpp				\
   src/mathic/CliParameter.cpp src/mathic/CliParser.cpp				\
@@ -63,7 +66,7 @@ divsim_SOURCES = src/divsim/divMain.cpp src/divsim/Simulation.cpp	\
   src/divsim/DivListModel.h src/divsim/KDTreeModel.h			\
   src/divsim/Simulation.h src/divsim/divMain.h src/divsim/Monomial.h	\
   src/divsim/stdinc.h
-divsim_LDADD = $(top_builddir)/libmathic.a -lmemtailor -lpthread
+divsim_LDADD = $(top_builddir)/libmathic.la -lmemtailor -lpthread
 
 # set up the priority queue simulation. Listing the headers in sources
 # ensure that those files are included in distributions.
@@ -73,7 +76,7 @@ pqsim_SOURCES = src/pqsim/Item.cpp src/pqsim/Model.cpp			\
   src/pqsim/GeobucketModel.h src/pqsim/Model.h src/pqsim/stdinc.h	\
   src/pqsim/HeapModel.h src/pqsim/pqMain.h src/pqsim/StlSetModel.h	\
   src/pqsim/Item.h src/pqsim/Simulator.h src/pqsim/TourTreeModel.h
-pqsim_LDADD = $(top_builddir)/libmathic.a -lmemtailor -lpthread
+pqsim_LDADD = $(top_builddir)/libmathic.la -lmemtailor -lpthread
 
 
 # set up tests to run on "make check"
@@ -83,7 +86,7 @@ TESTS=unittest
 check_PROGRAMS=$(TESTS)
 
 unittest_CXXFLAGS = -I$(top_srcdir)/src/ -std=gnu++0x
-unittest_LDADD = $(top_builddir)/libmathic.a $(DEPS_LIBS) -lmemtailor -lpthread
+unittest_LDADD = $(top_builddir)/libmathic.la $(DEPS_LIBS) -lmemtailor -lpthread
 unittest_CPPFLAGS = $(DEPS_CFLAGS)
 
 test_LIBS=
