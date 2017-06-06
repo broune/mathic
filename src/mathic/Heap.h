@@ -36,7 +36,7 @@ namespace mathic {
     Heap(const Configuration& configuration): _conf(configuration) {}
     Heap(const Configuration&& configuration):
       _conf(std::move(configuration)) {}
-    Heap(Heap&& heap): _tree(std::move(_tree)), _conf(std::move(heap._conf)) {}
+    Heap(Heap&& heap): _tree(std::move(heap._tree)), _conf(std::move(heap._conf)) {}
 
     Configuration& getConfiguration() {return _conf;}
     const Configuration& getConfiguration() const {return _conf;}
