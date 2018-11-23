@@ -36,6 +36,28 @@ install(DIRECTORY src/mathic/
   PATTERN stdinc.h EXCLUDE
   )
 
+add_executable(pqsim
+  src/pqsim/pqMain.h         src/pqsim/pqMain.cpp
+  src/pqsim/Item.h           src/pqsim/Item.cpp
+  src/pqsim/Model.h          src/pqsim/Model.cpp
+  src/pqsim/Simulator.h      src/pqsim/Simulator.cpp
+  src/pqsim/GeobucketModel.h
+  src/pqsim/HeapModel.h
+  src/pqsim/StlSetModel.h
+  src/pqsim/TourTreeModel.h
+  src/pqsim/stdinc.h
+  )
+add_executable(divsim
+  src/divsim/divMain.h       src/divsim/divMain.cpp 
+  src/divsim/Simulation.h    src/divsim/Simulation.cpp
+  src/divsim/DivListModel.h
+  src/divsim/KDTreeModel.h
+  src/divsim/Monomial.h
+  src/divsim/stdinc.h
+  )
+target_link_libraries(pqsim mathic)
+target_link_libraries(divsim mathic)
+
 option(PACKAGE_TESTS "Build the tests" ON)
 if(PACKAGE_TESTS)
   enable_testing()
