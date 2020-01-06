@@ -35,7 +35,7 @@ AS_IF([test "$GTEST_VERSION" = ""], [GTEST_VERSION="1.6.0"])
 AS_IF([test "$with_gtest" = ""], [with_gtest="download"])
 
 AS_IF([test "$with_gtest" = "download"],
-  [with_gtest="yes"; AC_CHECK_FILE([$GTEST_PATH/src/gtest-all.cc], [], [
+  [with_gtest="yes"; AS_IF([test -e "$GTEST_PATH/src/gtest-all.cc"], [], [
     mkdir -p "$GTEST_PATH";
     (
       cd $GTEST_PATH;
@@ -54,7 +54,7 @@ AS_IF([test "$with_gtest" = "download"],
     fi
   ])],
   [test "$with_gtest" = "yes"], [
-    AC_CHECK_FILE([$GTEST_PATH/src/gtest-all.cc], [], [
+    AS_IF([test -e "$GTEST_PATH/src/gtest-all.cc"], [], [
       AC_MSG_ERROR([could not find gtest source at path $GTEST_PATH.])
     ])
   ],
