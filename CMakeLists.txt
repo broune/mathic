@@ -39,6 +39,8 @@ add_compile_options(
 )
 
 add_library(mathic STATIC
+  src/mathic.h
+  src/mathic.cpp
   src/mathic/Action.cpp
   src/mathic/BitTriangle.cpp
   src/mathic/BoolParameter.cpp
