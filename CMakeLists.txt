@@ -1,11 +1,44 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(mathic VERSION 1.0 LANGUAGES CXX)
-
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(mathic
+project(mathic VERSION 1.0 LANGUAGES CXX)
+
+find_package(Threads 2.1 REQUIRED QUIET)
+find_package(Memtailor   REQUIRED)
+
+
+
+include(CheckIncludeFiles)
+check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
+check_include_files(sys/types.h	HAVE_SYS_TYPES_H)
+check_include_files(sys/stat.h	HAVE_SYS_STAT_H)
+check_include_files(stdlib.h	HAVE_STDLIB_H)
+check_include_files(string.h	HAVE_STRING_H)
+check_include_files(memory.h	HAVE_MEMORY_H)
+check_include_files(strings.h	HAVE_STRINGS_H)
+check_include_files(inttypes.h	HAVE_INTTYPES_H)
+check_include_files(stdint.h	HAVE_STDINT_H)
+check_include_files(unistd.h	HAVE_UNISTD_H)
+check_include_files(dlfcn.h	HAVE_DLFCN_H)
+
+# set_property(TARGET mathic PROPERTY CXX_STANDARD 11)
+add_compile_options(
+  -g -O2
+  -DPACKAGE_NAME="${PROJECT_NAME}"
+  -DPACKAGE_TARNAME="${PROJECT_NAME}"
+  -DPACKAGE_VERSION="${PROJECT_VERSION}"
+  -DPACKAGE_STRING="${PROJECT_NAME} ${PROJECT_VERSION}"
+  -DPACKAGE_BUGREPORT=""
+  -DPACKAGE_URL=""
+  -DPACKAGE="${PROJECT_NAME}"
+  -DVERSION="${PROJECT_VERSION}"
+  # TODO
+  -DLT_OBJDIR=".libs/"
+)
+
+add_library(mathic STATIC
   src/mathic/Action.cpp
   src/mathic/BitTriangle.cpp
   src/mathic/BoolParameter.cpp
@@ -23,22 +56,22 @@ add_library(mathic
   src/mathic/stdinc.h
   )
 
-find_package(Threads 2.1 REQUIRED QUIET)
-find_package(Memtailor   REQUIRED)
-
 target_link_libraries(mathic ${MEMTAILOR_LIBRARIES} Threads::Threads)
 target_include_directories(mathic
   PUBLIC
     src
     ${MEMTAILOR_INCLUDE_DIR}
   )
-  
+
 install(TARGETS mathic ARCHIVE DESTINATION lib)
 install(FILES src/mathic.h DESTINATION include)
 install(DIRECTORY src/mathic/
   DESTINATION include/mathic
   FILES_MATCHING PATTERN "*.h"
 #  PATTERN stdinc.h EXCLUDE
+  )
+install(FILES README.md lgpl-2.0.txt lgpl-2.1.txt lgpl-3.0.txt
+  DESTINATION licenses/mathic
   )
 
 option(enable_pqsim "Build pqsim" OFF)
@@ -57,7 +90,7 @@ add_executable(pqsim
 target_link_libraries(pqsim mathic)
 endif()
 
-option(enable_divsim "Build pqsim" OFF)
+option(enable_divsim "Build divsim" OFF)
 if(enable_divsim)
 add_executable(divsim
   src/divsim/divMain.h       src/divsim/divMain.cpp 
