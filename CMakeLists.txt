@@ -113,7 +113,6 @@ if(BUILD_TESTING)
     src/test/DivFinder.cpp
     src/test/HashTable.cpp
     src/test/PairQueue.cpp
-    src/test/gtestInclude.cpp
     src/test/testMain.cpp
     )
 
