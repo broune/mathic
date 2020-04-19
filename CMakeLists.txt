@@ -124,7 +124,7 @@ if(BUILD_TESTING)
   gtest_discover_tests(mathic-gtests)
   add_test(NAME mathic-gtests COMMAND mathic-gtests)
 
-  if(FALSE AND GTEST_FOUND)
+  if(GTEST_FOUND)
     target_link_libraries(mathic-gtests mathic GTest::GTest GTest::Main)
     target_include_directories(mathic-gtests PRIVATE ${GTEST_INCLUDE_DIR})
   else()
